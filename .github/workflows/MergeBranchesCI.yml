@@ -1,4 +1,4 @@
-name: Merge branches
+name: Sync multiple branches
 on:
   push:
     branches:
@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+
       - name: Merge development -> staging
         uses: devmasx/merge-branch@master
         with:
