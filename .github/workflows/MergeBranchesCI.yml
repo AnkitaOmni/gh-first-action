@@ -14,4 +14,4 @@ jobs:
           type: now
           from_branch: QA
           target_branch: main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: $Ci_Demo
