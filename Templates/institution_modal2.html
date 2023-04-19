@@ -1,0 +1,132 @@
+<style>
+	ul.checkout-bar li {
+		width: 20.5%;
+	}
+
+	ul.checkout-bar {
+		width: 90%;
+	}
+</style>
+
+<form id='ingresos2' action="{{ url_for('institution') }}" method="POST">
+	<div class="modal-body">
+
+
+
+		<div class="form-group">
+			<label>Institution ID Type</label>
+			<input type="text" name="institution_id_type_desc2" id="institution_id_type_desc2" class="form-control"
+				readonly>
+		</div>
+
+		<div class="form-group">
+			<label>Institution ID</label>
+			<input type="text" name="institution_id_desc2" id="institution_id_desc2" class="form-control" readonly>
+		</div>
+
+		<div class="form-group">
+			<label>Channel Name</label>
+			<input type="text" name="channel_name2" id="channel_name2" class="form-control" maxlength="20" readonly>
+		</div>
+
+		<div class="form-group">
+			<label>FIID</label>
+			<select name="fiid2" id="fiid2" class="form-control">
+				{% for type in fiid %}
+				<option value="{{type.description}}">
+					{{type.description}} </option>
+				{% endfor %}
+			</select>
+		</div>
+
+		<div class="form-group">
+			<label>Assigned Agreeement Code</label>
+			<input type="text" name="aac2" id="aac2" class="form-control" maxlength="10">
+		</div>
+
+		<div class="form-group">
+			<label>Name Officer</label>
+			<input type="text" name="name_officer2" id="name_officer2" class="form-control" maxlength="20">
+		</div>
+
+		<div class="form-group">
+			<label>Tax ID</label>
+			<input type="text" name="tax_id2" id="tax_id2" class="form-control" maxlength="10"
+				pattern="\d{8}-[a-zA-Z0-9]|\d{8}" placeholder="12345678-K">
+		</div>
+
+		<div class="form-group">
+			<label>Bank Account Number</label>
+			<input type="text" name="bank_account_number2" id="bank_account_number2" class="form-control"
+				maxlength="17">
+		</div>
+
+		<div class="form-group">
+			<label>Movement Type</label>
+			<input type="text" name="movment_type2" id="movment_type2" class="form-control" maxlength="2">
+		</div>
+
+		<div class="form-group">
+			<label>Bank Code</label>
+			<input type="text" name="bank_code2" id="bank_code2" class="form-control" maxlength="3">
+		</div>
+
+
+		<div class="form-group">
+			<label>Channel Type</label>
+			<select name="channel_type2" id="channel_type2" class="form-control">
+				<option value="1">PSP</option>
+				<option value="0">NON-PSP</option>
+			</select>
+		</div>
+
+		<input type="hidden" name="iic_OG" id="iic_OG" value="">
+		<input type="hidden" name="update" id="update" value="">
+	</div>
+
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+		<button type="submit" class="btn btn-primary btn-sm" id='update' name='update'>Save changes</button>
+	</div>
+</form>
+
+
+<script>
+	function updateRecord(par) {
+
+		// alert(par);
+		// console.log(par[12]);
+
+		document.getElementById("institution_id_type_desc2").value = par[0].replace(/\s+/g, '') + "-" + par[1].replace(/\s+/g, '');
+		document.getElementById("institution_id_desc2").value = par[2].replace(/\s+/g, '') + "-" + par[3].replace(/\s+/g, '');
+
+		for (var option of document.getElementById("fiid2").options) {
+			if (option.value === par[4].replace(/\s+/g, '')) {
+				option.selected = true;
+			}
+		}
+
+		if (par[12] === "True") {
+			var NP_P_V = "1";
+		}
+		else {
+			var NP_P_V = "0";
+		}
+
+		for (var option of document.getElementById("channel_type2").options) {
+			if (option.value === NP_P_V) {
+				option.selected = true;
+			}
+		}
+
+		document.getElementById("aac2").value = par[5].replace(/\s+/g, '');
+		document.getElementById("name_officer2").value = par[6].replace(/\s+/g, '');
+		document.getElementById("tax_id2").value = par[7].replace(/\s+/g, '');
+		document.getElementById("bank_account_number2").value = par[8].replace(/\s+/g, '');
+		document.getElementById("movment_type2").value = par[9].replace(/\s+/g, '');
+		document.getElementById("bank_code2").value = par[10].replace(/\s+/g, '');
+		document.getElementById("channel_name2").value = par[11].replace(/\s+/g, '');
+		document.getElementById("iic_OG").value = par[2].replace(/\s+/g, '');
+		$('#myModal2').modal('show');
+	}
+</script>

@@ -1,0 +1,180 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<div class="row">
+
+    <div class="col-md-6">
+        <!-- general form elements -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Upload Transactions For Adjustment </h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                </div>
+            </div>
+
+            <!-- form start -->
+            <form role="form" method="POST" action="{{url_for('upload_file_adjust')}}" name="search" enctype="multipart/form-data">
+                <div class="box-body">
+                    <div class="text-center">
+                        {% if result|length %}
+                        <ul class="list-unstyled">
+                            {% for dict_item in result %}
+                            <li><a href="{{ dict_item['link'] }}">{{dict_item['file']}}</a></li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p class="text-red">Extract files not present</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="box-footer">
+
+                    <div class="pull-left">
+                        <input type="file" name="myfile" />
+                    </div>
+
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-upload"></i>
+                            <span>Upload File</span>
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+
+<!-- page script -->
+<script>
+    var TermId = 0;
+    $(function () {
+    $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+    var data_t;
+    var table = $('#example1').DataTable({
+        "paging": false,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false
+    });
+    $('#update').click(function () {
+
+        $('#myModal').modal('show');
+
+
+        TermId = document.getElementById('TermId').value
+        $.getJSON($SCRIPT_ROOT + '/_fill_terms', {
+            id: TermId
+        }, function (data) {
+
+            $.each(data.rst, function (key, value) {
+                document.getElementById("TerminalId").readOnly = true;
+
+                document.getElementById(key).disabled = false;
+
+                if (key == "EntityId" || key == "OwnerEntityId") {
+                    if (value.toString().length == 5) {
+                        value = '000' + value;
+                    } else if (value.toString().length == 6) {
+                        value = '00' + value;
+                    } else if (value.toString().length == 7) {
+                        value = '0' + value;
+                    }
+                    document.getElementById(key).value = value;
+                } else {
+                    document.getElementById(key).value = value;
+
+                }
+
+
+            });
+        });
+        document.getElementById("create").style.display = "none";
+        document.getElementById("update_s").style.display = "";
+
+    });
+
+    $("#view").click(function () {
+        $('#myModal').modal('show');
+        document.getElementById("create").style.display = "none";
+        document.getElementById("update_s").style.display = "none";
+
+        TermId = document.getElementById('TermId').value
+        $.getJSON($SCRIPT_ROOT + '/_fill_terms', {
+            id: TermId
+        }, function (data) {
+
+            $.each(data.rst, function (key, value) {
+                document.getElementById(key).disabled = true;
+                if (key == "EntityId" || key == "OwnerEntityId") {
+                    if (value.toString().length == 5) {
+                        value = '000' + value;
+                    } else if (value.toString().length == 6) {
+                        value = '00' + value;
+                    } else if (value.toString().length == 7) {
+                        value = '0' + value;
+                    }
+                    document.getElementById(key).value = value;
+                } else {
+                    document.getElementById(key).value = value;
+
+                }
+
+            });
+        });
+
+    });
+
+
+    $('#delete').click(function () {
+        var retVal = confirm("Do you want to continue ?");
+        if (retVal == true) {
+            TermId = document.getElementById('TermId').value;
+            $.post($SCRIPT_ROOT + '/terminals', {
+                delete: "delete",
+                TerminalId: TermId
+
+            },
+                function (data, status) {
+
+                    table
+                        .clear()
+                        .draw();
+                });
+
+            return true;
+        }
+
+    });
+    });
+
+    $("#insert").click(function () {
+
+        $('#myModal').modal('show');
+        $('#ingresos').trigger("reset");
+
+        var inputs = document.getElementsByTagName('input');
+        for (i = 0; i < inputs.length; i++) {
+            inputs[i].disabled = false;
+        }
+
+        var selects = document.getElementsByTagName("select");
+        for (var i = 0; i < selects.length; i++) {
+            selects[i].disabled = false;
+        }
+        document.getElementById("TerminalId").readOnly = false;
+        document.getElementById("create").style.display = "";
+        document.getElementById("update_s").style.display = "none";
+
+    });
+</script>
+
+
+{% endblock %}

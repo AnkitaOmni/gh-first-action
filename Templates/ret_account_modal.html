@@ -1,0 +1,287 @@
+<style>
+	ul.checkout-bar li {
+		width: 20.5%;
+	}
+
+	ul.checkout-bar {
+		width: 90%;
+	}
+</style>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<div class="box-header">
+			</div>
+			<div class="box-body">
+
+				<div class="row">
+					<div class="checkout-wrap col-md-12 col-sm-12 col-xs-12">
+						<ul class="checkout-bar">
+							<li class="active"><a href="#get-started" data-toggle="tab"> Retailer Account </a>
+							</li>
+							<li><a href="#about-you" data-toggle="tab">General </a>
+							</li>
+							<li><a href="#excenta" data-toggle="tab">Commercial </a>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="tabbable-panel">
+						<div class="tabbable-line">
+
+							<ul class="nav nav-tabs " id="abc">
+								<li class="active" data-move="1">
+									<a href="#get-started" data-toggle="tab" id="a"> Retailer Account </a>
+								</li>
+								<li data-move="2"><a href="#about-you" data-toggle="tab" id="b"> General </a>
+								</li>
+								<li data-move="3"><a href="#excenta" data-toggle="tab" id="d"> Commercial </a>
+								</li>
+							</ul>
+
+							<div class="tab-content">
+								<div class="tab-pane container active" id="get-started">
+									<div class="col-md-8">
+										<div class="form-group">
+											<form id='ingresos' method="POST"
+												action="{{ url_for('retailer_account') }}">
+
+												<div class="col-md-9 hint--right hint--success"
+													data-hint="Please insert {{col}}">
+
+
+													<label class="check">Retailer ID</label><br>
+													<input class="form-control" value="" type="text" id="RetailerId"class="form-control input-sm pull-right" name="RetailerId" req>
+
+													<label class="check">Entity ID</label><br>
+													<select id="EntityId" name="EntityId" class="form-control input-sm pull-right" onchange="get_ret_id()" required>
+														{% for item in RetEntityId %}
+														<option value={{item.institution_id_code }}>{{item.institution_id_code}} - {{item.institution_id_type_desc}} - {{item.institution_id_desc}} </option>
+														{% endfor %}
+													</select>
+													<input type="text" value="" id="upm2_EntityId" name="upm2_EntityId" class="form-control input-sm pull-right" readonly style="display: none;">
+
+													<br>
+													<label class="check">Terminal ID</label><br>
+													<input class="form-control" value="" type="text" id="TerminalId"class="form-control input-sm pull-right" name="TerminalId" required>
+													<br>
+													<label class="check">Card Product ID</label><br>
+													<input class="form-control" value="" type="text" id="CardProductId"class="form-control input-sm pull-right" name="CardProductId" required>
+													<br>
+
+													<label class="check">Account Type Code</label><br>
+													<input class="form-control" value="" type="text" id="AccountTypeCode"class="form-control input-sm pull-right" name="AccountTypeCode" required>
+													<br>
+													
+													<label class="check">Account Number</label><br>
+													<input class="form-control" type="text" id="AccountNumber" class="form-control input-sm pull-right" name="AccountNumber" required>
+													<br>
+												</div>
+												<br>
+
+										</div>
+									</div>
+								</div>
+
+
+								<div class="tab-pane container" id="about-you">
+									<div class="col-md-8 ">
+										<div class="form-group">
+											{% set count = 6 %}
+											{% for col in retailer_account_cols[6:11] %}
+											<label> {{ col | add_space }} </label>
+											<div class="col-md-9 hint--right hint--success"
+												data-hint="Please insert {{col}}">
+												{% if selects[count] != 0 and selects[count] %}
+
+												<select id="{{col}}" name="{{col}}" class="form-control">
+													{% for item in selects[count] %}
+													<option value="{{item.code}}">{{item.description}} </option>
+													{% endfor %}
+												</select>
+
+												{% else %}
+
+												<input class="form-control" type="text" id="{{col}}" name="{{col}}">
+
+												{% endif %}
+											</div>
+											<br>
+											{% set count = count + 1 %}
+											{% endfor %}
+										</div>
+									</div>
+								</div>
+
+
+								<div class="tab-pane container" id="excenta">
+									<div class="col-md-8 ">
+										<div class="form-group">
+											{% set count = 11 %}
+											{% for col in retailer_account_cols[11:] %}
+											<label> {{ col | add_space }} </label>
+											<div class="col-md-9 hint--right hint--success"
+												data-hint="Please insert {{col}}">
+												{% if selects[count] != 0 and selects[count] %}
+
+												<select id="{{col}}" name="{{col}}" class="form-control">
+													{% for item in selects[count] %}
+													<option value="{{item.code}}">{{item.description}} </option>
+													{% endfor %}
+												</select>
+
+												{% else %}
+
+												<input class="form-control" type="text" id="{{col}}" name="{{col}}">
+
+												{% endif %}
+											</div>
+											<br>
+											{% set count = count + 1 %}
+											{% endfor %}
+											<input type="hidden" name="RID_H" id="RID_H">
+											<input type="hidden" name="EID_H" id="EID_H">
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+
+						<br>
+
+						<input type="button" id="back" class="btn btn-info " value="Back" />&nbsp;
+						<input type="button" id="next" class="btn btn-info " value="Next" /> &nbsp;
+						<input type="button" class="btn btn-success " id="create" value="Create"
+							onclick="submitForms()" />
+						<button name="update_s" class="btn btn-warning " id="update_s"
+							onclick="submitForms()">Update</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+
+		var selectop = ["RetefuenteCode", "ReteicaCode", "ImpoconsumoCode", "CreeCode", "ReteivaCode"];
+		var disableop = ["Retefuente", "Reteica", "Impoconsumo", "Cree", "Reteiva"];
+
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			var href = $(e.target).attr('href');
+			var $carr = $(".nav-tabs  a[href='" + href + "']").parent();
+			var $curr = $(".checkout-bar  a[href='" + href + "']").parent();
+			$('.checkout-bar li').removeClass();
+			$('.nav-tabs li').removeClass();
+			$carr.addClass("active");
+			$curr.addClass("active");
+			$curr.prevAll().addClass("visited");
+		});
+
+		$('#next').click(function () {
+
+			var val = $('ul#abc').find('li.active').data('move');
+
+			if (val != 3) {
+				var val1 = val + 1;
+				//alert(val1);
+
+				var href = $('ul#abc li[data-move =' + val1 + ']').children().attr('href');
+				var href1 = $('ul#abc li[data-move =' + val + ']').children().attr('href');
+				$(href1).removeClass("active");
+				$(href).addClass("active");
+				var $carr = $(".nav-tabs  a[href='" + href + "']").parent();
+				var $curr = $(".checkout-bar  a[href='" + href + "']").parent();
+				$('.checkout-bar li').removeClass();
+				$('.nav-tabs li').removeClass();
+				$carr.addClass("active");
+				$curr.addClass("active");
+				$curr.prevAll().addClass("visited");
+			}
+		});
+
+
+		$('#back').click(function () {
+
+			var val = $('ul#abc').find('li.active').data('move');
+
+			if (val != 1) {
+				var val1 = val - 1;
+				//alert(val1);
+
+				var href = $('ul#abc li[data-move =' + val1 + ']').children().attr('href');
+				var href1 = $('ul#abc li[data-move =' + val + ']').children().attr('href');
+				$(href1).removeClass("active");
+				$(href).addClass("active");
+				var $carr = $(".nav-tabs  a[href='" + href + "']").parent();
+				var $curr = $(".checkout-bar  a[href='" + href + "']").parent();
+				$('.checkout-bar li').removeClass();
+				$('.nav-tabs li').removeClass();
+				$carr.addClass("active");
+				$curr.addClass("active");
+				$curr.prevAll().addClass("visited");
+			}
+		});
+
+		$('#RetefuenteCode,#ReteicaCode,#ImpoconsumoCode,#CreeCode,#ReteivaCode',).change(function (e) {
+			var val = $(e.target).val();
+			var text = $(e.target).find("option:selected").text(); //only time the find is required
+			var id = $(e.target).attr('id');
+			var index = 0;
+			var disable = "";
+
+			//	alert(val + "  " + text  + "  " + "  " + id);
+
+			for (i = 0; i < selectop.length; i++) {
+				if (selectop[i] == id) {
+					index = selectop.indexOf(id);
+					//alert(index);
+
+					if (val == 2) {
+						document.getElementById(disableop[index]).value = 0;
+						document.getElementById(disableop[index]).readOnly = true;
+
+					}
+					else {
+						if (index == 0) {
+							document.getElementById(disableop[index]).value = "10.00";
+						}
+						else
+							if (index == 1) {
+								document.getElementById(disableop[index]).value = "1.00";
+							}
+							else
+								if (index == 2) {
+									document.getElementById(disableop[index]).value = "8.00";
+								}
+								else
+									if (index == 3) {
+										document.getElementById(disableop[index]).value = "8.00";
+									}
+									else
+										if (index == 4) {
+											document.getElementById(disableop[index]).value = "15.00";
+										}
+
+						document.getElementById(disableop[index]).readOnly = false;
+					}
+					break;
+				}
+			}
+		});
+
+	</script>
+
+	<script>
+		document.getElementById("CardProductId").disabled = false;
+		document.getElementById("RetailerId").disabled = false;
+		document.getElementById("TerminalId").disabled = false;
+		submitForms = function () {
+			document.forms["ingresos"].submit();
+		}
+	</script>
+
+

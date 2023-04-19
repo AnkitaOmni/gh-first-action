@@ -1,0 +1,177 @@
+{% extends "navigator.html" %}
+{% block body %}
+<style>
+  .toggle-off {
+    left: 35% !important;
+  }
+
+  .toggle-off.btn {
+    padding-left: 0 !important;
+  }
+
+
+  .toggle-on.btn {
+    padding-right: 0 !important;
+  }
+
+  .toggle-on {
+
+    left: auto !important;
+    right: 35% !important;
+
+  }
+</style>
+<div class="col-md-12">
+
+  <div class="active tab-pane" id="activity">
+    <!-- Here comes the current users-->
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Validations setup</h3><br><br>
+            <form method="post" action="">
+              <div class="row">
+                <div class="col-md-6">
+
+                  <label>Validation group</label>
+                  <select id="val_group" name="val_group" class="form-control">
+                    <option>Retailer </>
+                    <option>Terminal </>
+                    <option>Card </>
+                    <option>Others </>
+                  </select>
+
+                  <input id="filter" name="filter" type="submit" class="btn btn-primary" value="Filter"></>
+            </form>
+          </div>
+          <div class="col-md-6">
+
+            <form name="ins" action="{{url_for('update_institution')}}" method="POST">
+              <input type="hidden" name="origin" value="{{request.endpoint}}"></>
+              <label>Institution: </label>
+              <select onchange="this.form.submit()" name="institution" class="form-control">
+                {% for ins in session["institution"] %}
+                {% if session["role"] == "superuser" %}
+                <option {% if session["cur_institution"]==ins.institution_id_desc %}selected {% endif %}>
+                  {{ins.institution_id_desc}}</option>
+                {% else %}
+                <option {% if session["cur_institution"]==ins.institution_id_desc %}selected {% else %} hidden {% endif
+                  %}>{{ins.institution_id_desc}}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </form>
+
+          </div>
+
+          <div class="col-md-3">
+
+            <!--input id="search" name="search" type="submit" class="btn btn-info" value="Search"></-->
+          </div>
+        </div>
+
+      </div>
+      {% if result %}
+      <div class="box-body table-responsive no-padding">
+        <!--form method="" action="" -->
+        <table id="example1" class="table table-hover">
+          <thead>
+            <tr>
+
+              <th> Validation group</th>
+              <th>Validation name</th>
+              <th> Status </th>
+
+
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in result%}
+            {% if item.Val_group == colname %}
+            <tr>
+              <td>{{item.Val_group }}</td>
+              <td>{{item.Val_desc}}</td>
+              <td><input data-width="10" {%if item.Val_status==1%} checked {%endif%} name="{{item.Val_status}}"
+                  type="checkbox" data-toggle="toggle" data-onstyle="success" data-size="normal"></td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        <button id="save" onclick="GetCellValues();" class="btn btn-success">Update</button>
+        <!--/form-->
+      </div>
+      <!--/form-->
+      {% endif %}
+
+
+
+    </div>
+    <!-- /.box -->
+  </div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<!-- page script -->
+<script>
+  $(function () {
+
+    var table = $('#example1').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "fnDrawCallback": function () {
+        jQuery(':checkbox').bootstrapToggle();
+      }
+    });
+  });
+
+
+  function GetCellValues() {
+    $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+  var array = [];
+  var finaldata, counter;
+  var table = document.getElementById('example1');
+  for (var r = 1, n = table.rows.length; r < n; r++) {
+
+    if (table.rows[r].cells[2].innerHTML.includes("toggle btn btn-default off")) {
+      counter = 0;
+    }
+    else {
+      counter = 1;
+    }
+    array.push({ Val_group: table.rows[r].cells[0].innerHTML, Val_desc: table.rows[r].cells[1].innerHTML, Val_status: counter })
+  }
+  finaldata = JSON.stringify(array);
+  //alert(finaldata);
+
+
+
+
+  $.ajax({
+    url: '/enable_validations',
+    data: JSON.stringify(array),
+    contentType: 'application/json;charset=UTF-8',
+    type: 'POST',
+    success: function (response) {
+      alert('Successfully Updated');
+    },
+    error: function (error) {
+      console.log(error);
+    }
+  });
+}
+</script>
+
+
+
+{% endblock %}

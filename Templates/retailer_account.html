@@ -1,0 +1,227 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<style>
+  div.dataTables_filter {
+    text-align: right;
+    display: none;
+  }
+</style>
+
+<!-- Here comes the current users-->
+<div class="row">
+  <div class="col-xs-12">
+    <div class="box box-primary">
+
+      <div class="box-header with-border">
+        <h3 class="box-title">Retailer Account Configuration</h3>
+      </div>
+      {% if result %}
+      <div class="box-body">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="pull-right">
+              <form class="form-inline" method="POST" action="{{ url_for('retailer_account') }}" name="search">
+                <div class="form-group">
+                  <input class="form-control input-sm" type="text" name="key1" placeholder="type retailer Id here">
+                  <input class="form-control input-sm" type="text" name="key2" placeholder="type terminal Id here">
+                  <input class="form-control input-sm" type="text" name="key3" placeholder="type product Id here">
+                  <button id="search" name="search" type="submit" class="btn btn-info btn-sm"><i
+                      class="fa fa-search"></i></button>
+                  <button id="insert" type="button" class="btn btn-success btn-sm"><i class="fa fa-plus"></i></button>
+                </div>
+
+              </form>
+            </div>
+          </div>
+          <div class="col-xs-12">
+            <div class="table-responsive no-padding">
+              <table id="example1" class="table table-bordered table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Institution ID</th>
+                    <th>Retailer ID </th>
+                    <th>Retefuente </th>
+                    <th>Reteica </th>
+                    <th>Cree </th>
+                    <th>Reteiva </th>
+                    <th> </th>
+                    <!-- <th> </th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in result%}
+                  <tr>
+                    <td> {{ item.EntityId }} </td>
+                    <td> {{ item.RetailerId }} </td>
+                    <td> {{ item.Retefuente }} </td>
+                    <td> {{ item.Reteica }} </td>
+                    <td> {{ item.Cree }} </td>
+                    <td> {{ item.Reteiva }} </td>
+                    <td align="right">
+                      <button
+                        value="{{ item.EntityId }},{{ item.RetailerId }},{{ item.TerminalId }},{{ item.CardProductId }}, {{item.AccountTypeCode}},{{item.AccountNumber}}, {{item.RetefuenteCode}}, {{item.Retefuente}}, {{item.ReteicaCode}}, {{item.Reteica}}, {{item.ImpoconsumoCode}}, {{item.Impoconsumo}}, {{item.CreeCode}}, {{item.Cree}}, {{item.ReteivaCode}}, {{item.Reteiva}}"
+                        class="btn btn-warning btn-sm" onclick="fetchRecordU(this.value)"><i
+                          class="fa fa-edit"></i></button>
+                    
+                      <button value="{{ item.EntityId }},{{ item.RetailerId }},{{ item.TerminalId }},{{ item.CardProductId }}, {{item.AccountTypeCode}},{{item.AccountNumber}}, {{item.RetefuenteCode}}, {{item.Retefuente}}, {{item.ReteicaCode}}, {{item.Reteica}}, {{item.ImpoconsumoCode}}, {{item.Impoconsumo}}, {{item.CreeCode}}, {{item.Cree}}, {{item.ReteivaCode}}, {{item.Reteiva}}"
+                        class="btn btn-danger btn-sm" onclick="deleteRecord(this.value)"><i
+                          class="fa fa-trash"></i></button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="active tab-pane" id="activity">
+      <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Update Retailer Account</h4>
+            </div>
+            <div class="modal-body">
+              {% include "ret_account_modal.html" %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- page script -->
+<script>
+
+  var table;
+  $(function () {
+    var data_t;
+    $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+    table = $('#example1').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false
+    });
+});
+
+  // Redirect Func
+  function RD_URL() {
+    window.location.replace($SCRIPT_ROOT + "/retailer_account");
+    // window.location.href("https://192.168.1.205:4040/retailer_account");
+    // window.location.reload();
+  }
+
+
+  function deleteRecord(TERM) {
+    var params;
+    var retVal = confirm("Do you want to continue ?");
+    if (retVal == true) {
+      params = TERM.toString().split(',');
+      // alert("Params = "+params)
+      // alert ("RID = "+params[0]+"\nTID = "+params[1]+"\nCPID = "+params[2])
+      $.post($SCRIPT_ROOT + '/retailer_account',
+        {
+          delete: "delete",
+          EntityId: params[0],
+          RetailerId: params[1],
+          TerminalId: params[2],
+          CardProductId: params[3]
+        },
+        function (data, status) {
+          RD_URL();
+        });
+      return true;
+    }
+  }
+
+
+  function fetchRecordU(IDS) {
+    var params;
+    params = IDS.toString().split(',');
+    
+    $('#myModal').modal('show')
+    $('.modal-title').text('Update Retailer Account')
+    document.getElementsByClassName('modal-title').innerHTML = 'Update Retailer Account'
+    document.getElementById("create").style.display = "none";
+    document.getElementById("update_s").style.display = "";
+    // Hidden Values Setting For Update
+    document.getElementById("EID_H").value = params[0].replace(/\s+/g, '');
+    document.getElementById("RID_H").value = params[1].replace(/\s+/g, '');
+    document.getElementById("RetailerId").value = params[1].replace(/\s+/g, ''); 
+    document.getElementById("TerminalId").value = params[2].replace(/\s+/g, ''); 
+    document.getElementById("CardProductId").value = params[3].replace(/\s+/g, ''); 
+    document.getElementById("AccountTypeCode").value = params[4].replace(/\s+/g, ''); 
+    document.getElementById("AccountNumber").value = params[5].replace(/\s+/g, ''); 
+    document.getElementById("RetefuenteCode").value = params[6].replace(/\s+/g, ''); 
+    document.getElementById("Retefuente").value = params[7].replace(/\s+/g, ''); 
+    document.getElementById("ReteicaCode").value = params[8].replace(/\s+/g, ''); 
+    document.getElementById("Reteica").value = params[9].replace(/\s+/g, ''); 
+    document.getElementById("ImpoconsumoCode").value = params[10].replace(/\s+/g, ''); 
+    document.getElementById("Impoconsumo").value = params[11].replace(/\s+/g, ''); 
+    document.getElementById("CreeCode").value = params[12].replace(/\s+/g, ''); 
+    document.getElementById("Cree").value = params[13].replace(/\s+/g, ''); 
+    document.getElementById("ReteivaCode").value = params[14].replace(/\s+/g, '');
+    document.getElementById("Reteiva").value = params[15].replace(/\s+/g, ''); 
+
+    
+
+    for (var option of document.getElementById("EntityId").options) {
+      if (option.value === params[0].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    // Disabled fields
+    document.getElementById("RetailerId").disabled = true;
+    document.getElementById("EntityId").disabled = true;
+  }
+
+
+  $("#insert").click(function () {
+
+    $('#myModal').modal('show');
+    $('.modal-title').text('Add Retailer Account')
+    $('#ingresos').trigger("reset");
+    document.getElementById("create").style.display = "";
+    document.getElementById("update_s").style.display = "none";
+
+    var inputs = document.getElementsByTagName('input');
+    for (i = 0; i < inputs.length; i++) {
+      inputs[i].disabled = false;
+    }
+
+    var selects = document.getElementsByTagName("select");
+    for (var i = 0; i < selects.length; i++) {
+      selects[i].disabled = false;
+    }
+    document.getElementById("AcquirerId").disabled = false;
+    document.getElementById("RetailerId").disabled = false;
+    document.getElementById("TerminalId").disabled = false;
+    document.getElementById("CardProductId").disabled = false;
+
+    document.getElementById("Retefuente").value = "10.00";
+    document.getElementById("Reteica").value = "1.00";
+    document.getElementById("Impoconsumo").value = "8.00";
+    document.getElementById("Cree").value = "8.00";
+    document.getElementById("Reteiva").value = "15.00";
+  });
+
+
+</script>
+{% endblock %}

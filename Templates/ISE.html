@@ -1,0 +1,11 @@
+{%- for col in upper_cols -%}
+{{col}},
+{%- endfor -%}
+{% for r in records %}
+{% set selectloop = loop %}
+{%- for col in cols -%}
+{{r[col]}},
+{%- endfor -%}
+{% endfor %}
+
+

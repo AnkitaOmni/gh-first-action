@@ -1,0 +1,210 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<style>
+	.box-title {
+		font-size: 18px;
+		padding: 0px 12px;
+	}
+</style>
+
+<!-- Here comes the current users-->
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box box-primary">
+
+			<div class="box-header with-border">
+				<h3 class="box-title">Transaction History</h3>
+			</div>
+
+
+			<div class="box-body">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box-header" style="display:flex; align-items: flex-end;">
+
+							<form name="ins" action="{{url_for('_update_institution')}}" method="POST"
+								style="width: 18%; margin-right: 5px;" disabled>
+								<input type="hidden" name="origin" value="{{request.endpoint}}"></>
+								<!-- <label>Institution: </label> -->
+								<select onchange="this.form.submit()" name="institution" class="form-control input-sm"
+									disabled>
+									{% for ins in session["institution"] %}
+									{% if session["role"] == "superuser" %}
+									<option {% if session["cur_institution"]=="%s%s-%s"
+										|format(ins.institution_id_type_code,ins.institution_id_code,ins.institution_id_desc)
+										%}selected {% endif %} disabled>
+										{{ins.institution_id_type_code}}{{ins.institution_id_code}}-{{ins.institution_id_desc}}
+									</option>
+									{% else %}
+									<option {% if session["cur_institution"]=="%s%s-%s"
+										|format(ins.institution_id_type_code,ins.institution_id_code,ins.institution_id_desc)
+										%}selected {% else %} hidden {% endif %} disabled>
+										{{ins.institution_id_type_code}}{{ins.institution_id_code}}-{{ins.institution_id_desc}}
+									</option>
+									{% endif %}
+									{% endfor %}
+								</select>
+							</form>
+
+							<form class="form-inline" method="post" action="" name="search">
+								<div class="form-group">
+									<br>
+									<input placeholder="Reatiler ID" class="form-control input-sm" type="text"
+										name="key2" style="width: 200px;">
+									<input placeholder="Message Type" class="form-control input-sm" type="text"
+										name="key1">
+									<input placeholder="Settlement Date" class="form-control input-sm" type="date"
+										name="key3">
+									<input placeholder="RetrievalReferenceNumber (RRN)" class="form-control input-sm"
+										type="text" name="key4" style="width: 250px;">
+									<button id="search" name="search" type="submit" class="btn btn-info btn-sm"
+										value="Search"><i class="fa fa-search"></i></button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="col-xs-12">
+						<div class="table-responsive no-padding">
+							{% if result %}
+							<table id="example1"
+								class="table table-hover table-bordered table-striped dataTable no-footer">
+								<thead>
+									<tr>
+										<th>Ret Id</th>
+										<th>Msg Type</th>
+										<th>Amt</th>
+										<th>RRN</th>
+										<th>Date</th>
+										<th>Time</th>
+										<th>Proc Code</th>
+										<th>Resp Code</th>
+										<th>Track2Data</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for item in result%}
+									<tr>
+
+										<td> {{ item.CardAcceptorIdentification }} </td>
+										<td> {{ item.MessageType }} </td>
+										<td> {{ item.TransactionAmount }} </td>
+										<td> {{ item.RetrievalReferenceNumber }} </td>
+										<td> {{ item.LocalTransactionDate }} </td>
+										<td> {{ item.LocalTransactionTime }} </td>
+										<td> {{ item.ProcessingCode }} </td>
+										<td> {{ item.ResponseCode }} </td>
+										<td> {{ item.Track2Data[3:] }} </td>
+
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+
+	</div>
+</div>
+</div>
+
+
+
+
+<!-- page script -->
+<script>
+	var MesTyp = 0;
+	$(function () {
+
+	$SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+	var data_t;
+	var table = $('#example1').DataTable({
+		"paging": true,
+		"lengthChange": false,
+		"searching": false,
+		"ordering": true,
+		"info": true,
+		"autoWidth": false
+	});
+
+	// $(".viewAdj").click(function () {
+	$('#example1').on('click', '.viewAdj', function (e) {
+		$('#myModal').modal('show');
+		document.getElementById("copy_adj_s").style.display = "none";
+
+		var MesTyp = $(this).val().split(',');
+		//alert(MesTyp);
+		$.getJSON($SCRIPT_ROOT + '/_fill_extract_history', {
+			MessageType: MesTyp[0],
+			SettlementDate: MesTyp[1],
+			TransactionAmount: MesTyp[2],
+			SystemsTraceAuditNumber: MesTyp[3],
+			Id: MesTyp[4]
+		}, function (data) {
+
+			$.each(data.rst, function (key, value) {
+				document.getElementById(key).disabled = true;
+				document.getElementById(key).value = value;
+			});
+		});
+	});
+
+	//$(".copyAdj").click(function () {
+	$('#example1').on('click', '.copyAdj', function (e) {
+		$('#myModal').modal('show');
+		document.getElementById("copy_adj_s").style.display = "";
+
+		var MesTyp = $(this).val().split(',');
+		$.getJSON($SCRIPT_ROOT + '/_fill_extract_history', {
+			//   MessageType: MesTyp[0],
+			//   SettlementDate: MesTyp[1],
+			//   TransactionAmount: MesTyp[2],
+			//   SystemsTraceAuditNumber: MesTyp[3],
+			//   Id: MesTyp[4]
+			id: MesTyp[0],
+			CardAcceptorIdentification: MesTyp[1],
+			MessageType: MesTyp[2],
+			TransactionAmount: MesTyp[3],
+			RetrievalReferenceNumber: MesTyp[4],
+			LocalTransactionDate: MesTyp[5],
+			LocalTransactionTime: MesTyp[6],
+			ProcessingCode: MesTyp[7],
+			ResponseCode: MesTyp[8],
+			Track2Data: MesTyp[9],
+			SystemsTraceAuditNumber: MesTyp[10]
+		}, function (data) {
+
+			$.each(JSON.parse(data.rst), function (key, value) {
+				var headersV = ["CardAcceptorIdentification", "MessageType", "TransactionAmount", "RetrievalReferenceNumber", "LocalTransactionDate", "LocalTransactionTime", "ProcessingCode", "ResponseCode", "Track2Data", "SystemsTraceAuditNumber"];
+				//document.getElementById(key).disabled = true;
+				if (key == "id") {
+					console.log("keysin if id", key);
+					document.getElementById(key).value = value;
+				}
+				else {
+					if (headersV.includes(key)) {
+						console.log("headersV.includes(key)", key);
+						document.getElementById(key).value = value;
+					}
+					else {
+						console.log("keyL keyBr", key);
+						var keyL = key.concat("L");
+						var keyBr = key.concat("br");
+						document.getElementById(key).value = value;
+						document.getElementById(key).style.display = "none";
+						document.getElementById(keyL).style.display = "none";
+						document.getElementById(keyBr).style.display = "none";
+					}
+				}
+			});
+		});
+	});
+
+  
+});
+
+</script>
+{% endblock %}

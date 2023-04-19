@@ -1,0 +1,223 @@
+{% extends "navigator.html" %}
+{% block body %}
+<!-- jQuery 2.1.4 -->
+
+<div class="col-md-12">
+
+	<div class="active tab-pane" id="activity">
+		<!-- Here comes the current users-->
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box">
+					<div class="box-header">
+						<h3 class="box-title">Commission slabs</h3>
+
+						<!-- Modal -->
+						<div id="myModal" class="modal fade" role="dialog">
+							<div class="modal-dialog">
+
+								<!-- Modal content-->
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal">&times;</button>
+										<h4 class="modal-title">Update Slab</h4>
+									</div>
+									<form action="" method="Post">
+										<div class="modal-body">
+											<input type="hidden" id="id" name="id"
+												class="form-control input-sm pull-right" placeholder="id"
+												readonly="readonly">
+											Profile ID:<br>
+											<input type="text" id="profile_id" name="profile_id"
+												class="form-control input-sm pull-right" placeholder="profile_id">
+											Slabs type:<br>
+											<select id="slabs_type" name="slabs_type"
+												class="form-control input-sm pull-right" placeholder="slabs_type">
+												{% for slab_type in slabs_types %}
+												<option value={{slab_type}}>{{slab_type}}</option>
+												{% endfor %}
+											</select>
+											<br>Commission type:<br>
+											<select id="commission_type" name="commission_type"
+												class="form-control input-sm pull-right" placeholder="commission_type">
+												{% for commission_type in commission_types %}
+												<option value={{commission_type}}>{{commission_type}}</option>
+												{% endfor %}
+											</select>
+											<br>Minimum limit:<br>
+											<input type="text" id="min_limit" name="min_limit"
+												class="form-control input-sm pull-right" placeholder="min_limit">
+											Maximum limit:<br>
+											<input type="text" id="max_limit" name="max_limit"
+												class="form-control input-sm pull-right" placeholder="max_limit">
+											Value:<br>
+											<input type="text" id="value" name="value"
+												class="form-control input-sm pull-right" placeholder="value">
+										</div>
+
+										<div class="modal-footer">
+											<button class="btn btn-primary " name="update" type="submit">OK</button>
+											<button type="button" class="btn btn-default"
+												data-dismiss="modal">Close</button>
+										</div>
+										<!--/form-->
+								</div>
+
+							</div>
+						</div>
+						<!-- Modal -->
+						<div id="myModal1" class="modal fade" role="dialog">
+							<div class="modal-dialog">
+
+								<!-- Modal content-->
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal">&times;</button>
+										<h4 class="modal-title">Insert Slab</h4>
+									</div>
+									<!--form action ="" method = "Post"-->
+									<div class="modal-body">
+										<input label="id" type="hidden" id="id1" name="id1"
+											class="form-control input-sm pull-right" placeholder="id">
+										Profile ID:<br>
+										<input label="Profile ID" type="text" id="profile_id1" name="profile_id1"
+											class="form-control input-sm pull-right" placeholder="profile_id"
+											value={{profile_id}} readonly>
+										Slabs type:<br>
+										<select id="slabs_type1" name="slabs_type1"
+											class="form-control input-sm pull-right" placeholder="slabs_type">
+											{% for slab_type in slabs_types %}
+											<option value={{slab_type}}>{{slab_type}}</option>
+											{% endfor %}
+										</select>
+										Commission types:<br>
+										<select id="commission_type1" name="commission_type1"
+											class="form-control input-sm pull-right" placeholder="commission_type">
+											{% for commission_type in commission_types %}
+											<option value={{commission_type}}>{{commission_type}}</option>
+											{% endfor %}
+										</select>
+										Minimum limit:<br>
+										<input type="text" id="min_limit1" name="min_limit1"
+											class="form-control input-sm pull-right" placeholder="min_limit">
+										Maximum limit:<br>
+										<input type="text" id="max_limit1" name="max_limit1"
+											class="form-control input-sm pull-right" placeholder="max_limit">
+										Value:<br>
+										<input type="text" id="value1" name="value1"
+											class="form-control input-sm pull-right" placeholder="value">
+									</div>
+
+									<div class="modal-footer">
+										<button class="btn btn-primary " name="add" id="add" type="submit">OK</button>
+										<button type="button" class="btn btn-default"
+											data-dismiss="modal">Close</button>
+									</div>
+									<input type="hidden" name="counter" value="0" id="counter">
+									</form>
+								</div>
+
+							</div>
+						</div>
+
+						<!-- Modal
+					<div id="myModal1" class="modal fade" role="dialog">
+					  <div class="modal-dialog">						
+						
+						<div class="modal-content">
+						  <div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Update Config</h4>
+						  </div>
+						  <div class="modal-body">
+							<button class="btn btn-primary " data-dismiss="modal" id="update">Update</button>
+							<button class="btn btn-primary " data-dismiss="modal" id="delete" type="submit">Delete</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  </div>
+						  <div class="modal-footer">
+						  </div>
+						</div>
+					  </div>
+					</div>-->
+					</div>
+					<!-- /.box-header -->
+
+					<div class="box-body table-responsive no-padding">
+						<table id="example1" class="table table-hover">
+							<thead>
+								<tr>
+									<th></th>
+									<th>Profile ID</th>
+									<th>Slabs Type</th>
+									<th>Commission Type</th>
+									<th>Minimum Limit</th>
+									<th>Maximum Limit</th>
+									<th>Value</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for con in com %}
+								<tr>
+									<td>{{con[0]}}</td>
+									<td>{{con[1]}}</td>
+									<td>{{con[2]}}</td>
+									<td>{{con[3]}}</td>
+									<td>{{con[4]}}</td>
+									<td>{{con[5]}}</td>
+									<td>{{con[6]}}</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<!-- /.box-body -->
+
+				</div>
+				<button id="insert" type="button" class="btn btn-success">Add slab</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- /.col -->
+
+<!-- page script -->
+<script>
+	$(function () {
+		var data;
+		var table = $('#example1').DataTable({
+			"paging": true,
+			"lengthChange": false,
+			"searching": false,
+			"ordering": true,
+			"info": true,
+			"autoWidth": false
+		});
+
+		$('#example1 tbody').on('click', 'tr', function () {
+
+			$('#myModal').modal('show');
+			data = table.row(this).data();
+			console.log(data);
+			document.getElementById("id").value = data[0];
+			document.getElementById("profile_id").value = data[1];
+			document.getElementById("slabs_type").value = data[2];
+			document.getElementById("commission_type").value = data[3];
+			document.getElementById("min_limit").value = data[4];
+			document.getElementById("max_limit").value = data[5];
+			document.getElementById("value").value = data[6];
+		});
+
+	});
+
+	$("#add").on("click", function () {
+		document.getElementById("counter").value = "1";
+	});
+	$("#insert").click(function () {
+		$('#myModal1').modal('show');
+	});
+
+
+</script>
+{% endblock %}

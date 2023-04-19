@@ -1,0 +1,209 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<div class="col-md-12">
+  <div class="nav-tabs-custom">
+    <ul class="nav nav-tabs">
+      {%if session['role'] == "superuser" %}
+
+
+      <li class="active"><a href="#activity" data-toggle="tab">User Accounts</a></li>
+      <li><a href="#settings" data-toggle="tab">Add user</a></li>
+      <li><a href="#password" data-toggle="tab">Change password</a></li>
+      <li><a href="#drop" data-toggle="tab">Delete user</a></li>
+
+    </ul>
+    <div class="tab-content">
+      <div class="active tab-pane" id="activity">
+        <!-- Here comes the current users-->
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="box">
+              <div class="box-header">
+                <h3 class="box-title">User Accounts</h3>
+                <div class="box-tools">
+                  <div class="input-group" style="width: 150px;">
+                    <form class="form-horizontal" action="" method="POST">
+                      <input type="text" id="table_search" name="table_search" class="form-control input-sm pull-right"
+                        placeholder="Search">
+                      &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                      <button class="btn btn-sm btn-default" id="search" name="search" onclick="submitForms();"><i
+                          class="fa fa-search"></i></button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <br><br>
+
+              <div class="box-body table-responsive no-padding">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Add</th>
+                      <th>Username</th>
+                      <th>Role</th>
+                      <th>Mail</th>
+                      <th>Permissions</th>
+                      <th>Edit permissions</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for user in users %}
+
+                    <tr>
+                      <td>{{user[0]}}</td>
+                      <td>{{user[1]}}</td>
+                      <td>{{user[2]}}</td>
+
+                      <td>{{user[3]}}</td>
+                      <td>
+                        {% for k,v in user[4].items() %}
+                        {% if v %}
+                        - {{k}}: {{v}} <br>
+                        {% endif %}
+                        {% endfor %}
+                      </td>
+                      <td><a target="_blank" href="{{url_for('permissions')}}?user={{user[1]}}">Edit</a></td>
+
+                      {% endfor %}
+                  </tbody>
+                </table>
+              </div><!-- /.box-body -->
+            </div><!-- /.box -->
+          </div>
+        </div>
+
+
+      </div>
+      <div class="tab-pane" id="settings">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Add new user</h3>
+
+
+            <form class="form-horizontal" action="" method="post">
+              <div class="form-group">
+                <div class="box-header">
+                  <label>Username:</label>
+                </div>
+
+                <!-- <input class="form-control" type="text" placeholder="username" name="username" size="30"
+                  value="{{ request.form.username }}" pattern="^[a-zA-Z0-9-_]+[a-z A-Z 0-9 - _]*$" required> -->
+                <input class="form-control" type="text" placeholder="username" name="username" size="30"
+                  value="{{ request.form.username }}" required>
+                <div class="box-header">
+                  <label>Email:</label>
+                </div>
+                <input class="form-control" type="email" placeholder="demo@domain.com" name="email"
+                  title="Please Enter Valid Email-Id (format: xxx@xxx.xxx)" size="30"
+                  pattern="^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$" value="{{ request.form.email }}" required>
+
+                <div class="box-header">
+                  <label>Role:</label>
+                </div>
+                <select id="role" name="role" class="form-control selectpicker show-menu-arrow" data-style="btn-success"
+                  data-width="75%">
+                  <option>superuser</option>
+                  <option>compensator</option>
+                  <option>administrator</option>
+                  <option>authorizer</option>
+                </select>
+
+
+                <div class="box-header">
+                  <label>Institution:</label>
+                </div>
+                <select name="institution" class="form-control">
+                  {% for ins in session["institution"] %}
+                  {% if ins.institution_id_desc %}
+                  <option>{{ins.institution_id_type_code}}{{ins.institution_id_code}}-{{ins.institution_id_desc}}
+                  </option>
+                  {% endif %}
+                  {% endfor %}
+                </select>
+
+
+                <input class="form-control" type="hidden" placeholder="permissions" name="permissions" size="30">
+                <div class="box-header">
+                  <label>Password:</label>
+                </div>
+                <input class="form-control" type="password" placeholder="password" name="password" size="30">
+
+                <div class="box-header">
+                  <label>Password(repeat):</label>
+                </div>
+                <input class="form-control" type="password" placeholder="password" name="password2" size="30">
+
+                <div class="actions"><input class="btn btn-danger" type="submit" value="Add user"></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="drop">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Delete user</h3>
+
+
+            <form class="form-horizontal" action="" method="post">
+              <div class="form-group">
+                <div class="box-header">
+                  <label>Username:</label>
+                </div>
+
+                <input class="form-control" type="text" placeholder="username" name="username" size="30"
+                  value="{{ session['role'] }}" {%if not session['role']=="superuser" %} readonly {%endif%}>
+
+                <div class="actions"><button name="drop" class="btn btn-danger" id="drop" onclick="submitForms()">Delete
+                    user</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {% endif %}
+      <div class="tab-pane" id="password">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Change password</h3>
+
+
+            <form class="form-horizontal" action="" method="post">
+              <div class="form-group">
+                <div class="box-header">
+                  <label>Username:</label>
+                </div>
+
+
+                <input class="form-control" type="text" placeholder="username" name="username" size="30"
+                  value="{{ session['role'] }}" readonly>
+                <div class="box-header">
+                  <label>New password:</label>
+                </div>
+                <input class="form-control" type="password" placeholder="password" name="password" size="30">
+
+                <div class="box-header">
+                  <label>New password(repeat):</label>
+                </div>
+                <input class="form-control" type="password" placeholder="password" name="password2" size="30">
+
+                <div class="actions"><button name="update" class="btn btn-warning" id="update"
+                    onclick="submitForms()">Update password</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

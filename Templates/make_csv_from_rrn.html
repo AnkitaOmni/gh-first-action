@@ -1,0 +1,169 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<!-- * To Upload The RRN File * -->
+
+<div class="row">
+
+    <div class="col-md-6">
+        <!-- general form elements -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Upload RRN File </h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                </div>
+            </div>
+
+            <!-- form start -->
+            <form role="form" method="POST" action="{{ url_for('upload_rrn') }}" name="search"
+                enctype="multipart/form-data">
+                <div class="box-body">
+                    <div class="text-center">
+                        {% if result|length %}
+                        <ul class="list-unstyled">
+                            {% for dict_item in result %}
+                            <li><a href="{{dict_item['link']}}">{{dict_item['file']}}</a></li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p class="text-red">Extract files not present</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="box-footer">
+
+                    <div class="pull-left">
+                        <input type="file" name="myfile" />
+                    </div>
+
+                    <div class="pull-right">
+                        <button type="submit" name="make_extract_from_rrn" class="btn btn-success"><i
+                                class="fa fa-file-text"></i>
+                            <span>Make Extract</span>
+                        </button>
+                    </div>
+                    <div class="pull-right">
+                        <button type="submit" name="upload_rrn_file" class="btn btn-primary"><i
+                                class="fa fa-cloud-upload"></i>
+                            <span>Upload File</span>
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- * Downlaoding The CSV Made From Provided RRN File * -->
+<br><br>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+
+            <div class="box-header with-border">
+                <h3 class="box-title">Download Extract File Made From Uploaded RRN</h3>
+            </div>
+
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-12">
+
+                        <!-- <form class="form-inline" method="POST" action="" name="search">
+                            <div class="form-group">
+                                <div class="col-md-2">
+                                    <label>Report type:</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <select name="result_type" class="form-control input-sm">
+                                        <option value="01">Retailer</option>
+                                        <option value="02">Adjustment</option>
+                                        <option value="03">Conciliation</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-1">
+                                    <label>Date:</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control input-sm" type="date" id="date_" name="select_date"
+                                        value="<?= date('Y-m-d', time()); ?>">
+                                </div>
+
+
+                                <div class="col-md-1">
+                                    <input class="btn btn-info btn-sm" name="download" type="submit"
+                                        value="Submit"></input>
+                                </div>
+
+                            </div>
+                        </form> -->
+
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="table-responsive no-padding">
+                            <form action="" method="POST">
+                                <table id="example1" class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Date</th>
+                                            <th>Download</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        {% for dict_item in result2 %}
+
+                                        <tr>
+                                            <td>{{dict_item['file_name']}}</td>
+                                            <td>{{dict_item.file_date}}</td>
+                                            <td>
+                                                <a href="{{ url_for('download_file' ,file_path=dict_item.absolute_file_name|string) }}"
+                                                    class="btn btn-info">Download</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script>
+    $(function () {
+        $('#example1').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": false,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false
+        });
+    });
+</script> 
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+

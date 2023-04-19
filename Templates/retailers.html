@@ -1,0 +1,227 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<style>
+	div.dataTables_filter {
+		text-align: right;
+		display: none;
+	}
+</style>
+
+<!-- Here comes the current users-->
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box box-primary">
+
+			<div class="box-header with-border">
+				<h3 class="box-title">Retailer Configuration</h3>
+			</div>
+
+			
+			<div class="box-body">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="pull-right">
+							<form class="form-inline" method="post" action="" name="search">
+								<div class="form-group">
+
+									<input class="form-control input-sm" type="text" name="key1"
+										placeholder="Search Retailer ID">
+									<button id="search" name="search" type="submit" class="btn btn-info btn-sm"><i
+											class="fa fa-search"></i></button>
+									<button id="insert" type="button" class="btn btn-success btn-sm"><i
+											class="fa fa-plus"></i></button>
+
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="col-xs-12">
+						<div class="table-responsive no-padding">
+							{% if result %}
+							<table id="example1" class="table table-bordered table-striped table-hover">
+								<thead>
+									<tr>
+										<th>Institution ID</th>
+										<th>Retailer ID</th>
+										<th> Retailer name</th>
+										<th>Status code</th>
+										<th>Category code</th>
+										<th>State code</th>
+										<th>City code</th>
+										<th> </th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for item in result%}
+									<tr>
+										<td> {{ item.EntityId }} </td>
+										<td> {{ item.RetailerId }} </td>
+										<td> {{ item.Name }} </td>
+										<td> {{ item.StatusCode }} </td>
+										<td> {{ item.GroupCode }} </td>
+										<td> {{ item.StateCode }} </td>
+										<td> {{ item.CityCode }} </td>
+										<td align="right">
+
+											<button value="{{ item.RetailerId }},{{ item.Name }}"
+												class="btn btn-warning btn-sm" onclick="updateRecord1(this.value)"><i
+													class="fa fa-edit"></i></button>
+											<button value="{{ item.RetailerId }},{{ item.Name }}"
+												class="btn btn-danger btn-sm" onclick="deleteRecord(this.value)"><i
+													class="fa fa-trash"></i></button>
+										</td>
+
+									</tr>
+									{% endfor %}
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+
+		<div class="active tab-pane" id="activity">
+			<div id="myModal" class="modal fade" role="dialog">
+				<div class="modal-dialog modal-lg">
+
+					<!-- Modal content-->
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Update Retailer</h4>
+						</div>
+						<div class="modal-body">
+							{% include "retailers_modal.html" %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+</div>
+
+
+<!-- page script -->
+<script>
+	var table;
+	$(function () {
+		var data_t;
+		$SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+		table = $('#example1').DataTable({
+			"paging": true,
+			"lengthChange": false,
+			"searching": true,
+			"ordering": true,
+			"info": true,
+			"autoWidth": false
+		});
+});
+
+
+	function deleteRecord(TERM) {
+		var params;
+		var retVal = confirm("Do you want to continue ?");
+		if (retVal == true) {
+			params = TERM.toString().split(',');
+			$.post($SCRIPT_ROOT + '/retailers',
+				{
+					delete: "delete",
+					RetailerId: params[0],
+					Name: params[1]
+
+				},
+				function (data, status) {
+					location.reload(true);
+					// table
+					// 	.clear()
+					// 	.draw();
+				});
+
+			return true;
+		}
+
+	}
+
+
+	function viewRecord(TERM) {
+		$('#myModal').modal('show');
+		var params;
+		document.getElementById("create").style.display = "none";
+		document.getElementById("update_s").style.display = "none";
+
+
+		params = TERM.toString().split(',');
+		$.getJSON($SCRIPT_ROOT + '/_fill_ret', {
+			id: params[0],
+			id1: params[1]
+		}, function (data) {
+
+			$.each(data.rst, function (key, value) {
+				document.getElementById(key).disabled = true;
+				document.getElementById(key).value = value;
+
+			});
+		});
+
+	}
+
+
+
+	function updateRecord1(TERM) {
+
+		$('#myModal').modal('show');
+		var params;
+
+		params = TERM.toString().split(',');
+
+		$.getJSON($SCRIPT_ROOT + '/_fill_ret', {
+			id: params[0],
+			id1: params[1]
+		}, function (data) {
+
+			$.each(data.rst, function (key, value) {
+				document.getElementById("RetailerId").readOnly = true;
+				document.getElementById("Name").readOnly = true;
+
+				document.getElementById(key).disabled = false;
+				document.getElementById(key).value = value;
+
+
+			});
+		});
+		document.getElementById("create").style.display = "none";
+		document.getElementById("update_s").style.display = "";
+
+	}
+
+	$("#insert").click(function () {
+		$('#ingresos').trigger("reset");
+		document.getElementById("RetailerId").readOnly = false;
+		//   document.getElementById("retno").disabled = false;
+
+		$('#myModal').modal('show');
+		//$("#ingresos :input").prop("disabled", false);
+
+		var inputs = document.getElementsByTagName('input');
+		for (i = 0; i < inputs.length; i++) {
+			inputs[i].disabled = false;
+		}
+
+		var selects = document.getElementsByTagName("select");
+		for (var i = 0; i < selects.length; i++) {
+			selects[i].disabled = false;
+		}
+		document.getElementById("create").style.display = "";
+		document.getElementById("update_s").style.display = "none";
+
+	});
+
+</script>
+
+{% endblock %}

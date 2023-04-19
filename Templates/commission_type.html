@@ -1,0 +1,559 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<style>
+  div.dataTables_filter {
+    text-align: right;
+    display: none;
+  }
+</style>
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="box box-primary">
+
+      <div class="box-header with-border">
+        <h3 class="box-title">Commission Entity Configuration</h3>
+      </div>
+
+      <div class="box-body">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="pull-right">
+              <form class="form-inline" method="POST" name="search">
+                <div class="form-group">
+
+                  <input class="form-control input-sm" type="text" name="key1" placeholder="Search Retailer ID">
+                  <button id="search" name="search" type="submit" class="btn btn-info btn-sm"><i
+                      class="fa fa-search"></i></button>
+                  <button id="insert" name="insert" type="button" class="btn btn-success btn-sm">Add</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-xs-12">
+            <div class="table-responsive no-padding">
+              <table id="example1" class="table table-bordered table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Institution ID</th>
+                    <th>Retailer ID</th>
+                    <th>Channel</th>
+                    <th>Commission Type</th>
+                    <th>Commission Sub-Type</th>
+                    <th>Card Type</th>
+                    <th>MCC Card Type</th>
+                    <th>BIN</th>
+                    <th>Transaction Identifier</th>
+                    <th>Priority</th>
+                    <th>Region</th>
+                    <th>Rubro</th>
+                    <th>Status</th>
+                    <th></th>
+                    <th></th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for k in rcof %}
+                  <tr>
+
+                    <td>{{k.institution_id}}</td>
+                    <td>{{k.retailer_id}}</td>
+                    <td>{{k.channel}}</td>
+
+                    {% if k.commision_type == "1" %}
+                    <td>Fixed</td>
+                    {% elif k.commision_type == "2" %}
+                    <td>Percentage</td>
+                    {% else %}
+                    <td>Both</td>
+                    {% endif %}
+
+                    {% if k.commision_sub_type == "1" %}
+                    <td>Plain</td>
+                    {% elif k.commision_sub_type == "2" %}
+                    <td>Amount</td>
+                    {% elif k.commision_sub_type == "3" %}
+                    <td>Incremental</td>
+                    {% else %}
+                    <td>Count</td>
+                    {% endif %}
+
+
+                    {% if k.card_type == "1" %}
+                    <td>Enabled</td>
+                    {% else %}
+                    <td>Disabled</td>
+                    {% endif %}
+
+                    {% if k.mcc == "1" %}
+                    <td>Enabled</td>
+                    {% else %}
+                    <td>Disabled</td>
+                    {% endif %}
+
+                    {% if k.bin == "1" %}
+                    <td>Enabled</td>
+                    {% else %}
+                    <td>Disabled</td>
+                    {% endif %}
+
+                    {% if k.transaction_identifier == "1" %}
+                    <td>Enabled</td>
+                    {% else %}
+                    <td>Disabled</td>
+                    {% endif %}
+
+
+                    
+                    <td>{{k.priority}}</td>
+                    
+                    {% if k.region == "1" %}
+                    <td>Enabled</td>
+                    {% else %}
+                    <td>Disabled</td>
+                    {% endif %}
+                    
+                    {% if k.rubro == "1" %}
+                    <td>Enabled</td>
+                    {% else %}
+                    <td>Disabled</td>
+                    {% endif %}
+                    
+                    {% if k.status == True %}
+                    <td>Active</td>
+                    {% else %}
+                    <td>Inactive</td>
+                    {% endif %}
+                    <td align="right" width="10%">
+                      <button
+                        value="{{k.institution_id}},{{k.retailer_id}},{{k.channel}},{{k.card_type}},{{k.mcc}},{{k.bin}},{{k.transaction_identifier}},{{k.commision_type}},{{k.commision_sub_type}},{{k.status}},{{k.priority}},{{k.region}},{{k.rubro}}"
+                        class="btn btn-warning btn-sm" onclick="UR(this.value)"><i class="fa fa-edit"></i></button>
+                    </td>
+                    <td align="right" width="10%">
+                      <button
+                        value="{{k.institution_id}},{{k.retailer_id}},{{k.channel}},{{k.card_type}},{{k.mcc}},{{k.bin}},{{k.transaction_identifier}},{{k.commision_type}},{{k.commision_sub_type}},{{k.status}},{{k.priority}},{{k.region}},{{k.rubro}}"
+                        class="btn btn-danger btn-sm" onclick="DR(this.value)"><i class="fa fa-trash"></i></button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- FORM STARTS ingresos -->
+    <form name="ingresos" id="ingresos" action="{{ url_for('commission_type') }}" method="POST">
+      <!-- Modal1 -->
+      <div id="myModal1" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Add Commission Type</h4>
+            </div>
+            <!--form action ="" method = "Post"-->
+            <div class="modal-body">
+
+              Instituiton ID:<br>
+              <select id="inst_id" name="inst_id" class="form-control input-sm pull-right" required>
+                <option value=DEFAULT>DEFAULT</option>
+                {% for i_id in IID %}
+                <option value={{i_id.institution_id_code}}>{{i_id.institution_id_code}}</option>
+                {% endfor %}
+              </select>
+
+              Retailer ID:<br>
+              <input type="text" id="retailer_id" name="retailer_id" class="form-control input-sm pull-right" maxlength="30" pattern="^[a-zA-Z0-9]+$" required>
+
+              Channel:<br>
+              <select id="channel_name" name="channel_name" class="form-control input-sm pull-right" required>
+                <option value=DEFAULT>DEFAULT</option>
+                {% for CH in IID %}
+                <option value={{CH.channel_name}}>{{CH.channel_name}}</option>
+                {% endfor %}
+              </select>
+
+              Commission Type:<br>
+              <select id="com_type" name="com_type" class="form-control input-sm pull-right" required>
+                {% for i1 in C_T %}
+                <option value={{i1.code}}>{{i1.description}}</option>
+                {% endfor %}
+              </select>
+
+              Commission Sub-Type:<br>
+              <select id="com_sub_type" name="com_sub_type" class="form-control input-sm pull-right" required>
+                {% for i2 in C_S_T %}
+                <option value={{i2.code}}>{{i2.description}}</option>
+                {% endfor %}
+              </select>
+
+              Card Type:<br>
+              <select id="card_type" name="card_type" class="form-control input-sm pull-right" required>
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+              MCC Card Type:<br>
+              <select id="mcc_ct" name="mcc_ct" class="form-control input-sm pull-right" placeholder="mcc_ct" required>
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+              BIN:<br>
+              <select id="bin" name="bin" class="form-control input-sm pull-right" placeholder="BIN VALUE" required>
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+              Transaction Identifier:<br>
+              <select id="tran_id" name="tran_id" class="form-control input-sm pull-right" placeholder="tran_id"
+                required>
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+              
+
+              Priority:<span style="color: red;">(Priority Value should be between 1 to 5)</span><br>
+              <input type="text" step="1" id="priority" name="priority"
+                class="form-control input-sm pull-right" placeholder="1" maxlength="1" pattern="[1-5]+" title="Only 1-5 Number allow" required>
+
+              Region:<br>
+              <select id="region" name="region" class="form-control input-sm pull-right" required>
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+              Rubro:<br>
+              <select id="rubro" name="rubro" class="form-control input-sm pull-right" placeholder="rubro" required>
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+              Status:<br>
+              <select id="status" name="status" class="form-control input-sm pull-right" placeholder="status" required>
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+
+              
+
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-primary " type="submit">OK</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            <input type="hidden" name="counter" value="0" id="counter">
+
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+    <form action="{{ url_for('commission_type') }}" method="POST">
+      <!-- Modal2 -->
+      <div id="myModal2" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal2 content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Update Commission Type</h4>
+            </div>
+
+            <div class="modal-body">
+
+              <input type="hidden" name="update" id="update">
+
+              Instituiton ID:<br>
+              <input type="text" value="" id="institution_id" name="institution_id" class="form-control input-sm pull-right" readonly>
+
+              Retailer ID:<br>
+              <input type="text" value="" id="ret_id" name="ret_id" class="form-control input-sm pull-right" readonly>
+
+              Channel:<br>
+              <input type="text" value="" id="channel_upm2" name="channel_upm2" class="form-control input-sm pull-right" readonly>
+
+              Commission Type:<br>
+              <select id="upm2_com_t" name="upm2_com_t" class="form-control input-sm pull-right" required>
+                {% for i1 in C_T %}
+                <option value={{i1.code}}>{{i1.description}}</option>
+                {% endfor %}
+              </select>
+
+              Commission Sub-Type:<br>
+              <select id="upm2_com_st" name="upm2_com_st" class="form-control input-sm pull-right" required>
+                {% for i2 in C_S_T %}
+                <option value={{i2.code}}>{{i2.description}}</option>
+                {% endfor %}
+              </select>
+
+              Card Type :<br>
+              <select id="upm2_ct" name="upm2_ct" class="form-control input-sm pull-right" value="">
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+              MCC Card Type :<br>
+              <select id="upm2_mct" name="upm2_mct" class="form-control input-sm pull-right" value="">
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+              BIN :<br>
+              <select id="upm2_bin" name="upm2_bin" class="form-control input-sm pull-right" value="">
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+              Transaction Identifier :<br>
+              <select id="upm2_tid" name="upm2_tid" class="form-control input-sm pull-right" value="">
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+
+              Priority:<span style="color: red;">(Priority Value should be between 1 to 5)</span><br>
+              <input type="text" value="" id="ump2_priority" name="ump2_priority" class="form-control input-sm pull-right" pattern="[1-5]+" title="Only 1-5 Number allow" required>
+
+
+              Region:<br>
+              <select id="uregion" name="region" class="form-control input-sm pull-right" value="">
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+              Rubro:<br>
+              <select id="upm2_rb" name="upm2_rb" class="form-control input-sm pull-right" value="">
+                <option value="1">True</option>
+                <option value="0">False</option>
+              </select>
+
+              
+              Status:<br>
+              <select id="upm2_st" name="upm2_st" class="form-control input-sm pull-right" value="">
+                <option value="True">Active</option>
+                <option value="False">Inactive</option>
+              </select>
+
+              
+
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-primary" type="submit">OK</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+
+  </div>
+</div>
+
+
+<!-- page script -->
+<script>
+
+  $(function () {
+    var data;
+    $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+  var table = $('#example1').DataTable({
+    "paging": true,
+    "lengthChange": false,
+    "searching": true,
+    "ordering": true,
+    "info": true,
+    "autoWidth": false
+  });
+});
+
+  // Redirect Func
+  function RD_URL() {
+    // window.location.replace($SCRIPT_ROOT + "/commission_type");
+    // window.location.reload();
+    try{
+      var url = window.location.href.split("?")[0];
+    }
+    catch(error){
+      console.error(error);
+      var url = window.location.href;
+    }
+    window.location.href = url;
+  }
+
+
+  function get_ret_id() {
+    var inst_id = document.getElementById("inst_id").value;
+    // alert('Inst ID = ' + inst_id);
+
+    // AJAX CALLL DEPLOYED
+    $.get($SCRIPT_ROOT + '/get_rc_ret_id',
+      {
+        Instituiton_ID: inst_id
+      },
+      function (data, status) {
+        // alert(data);
+        $('#retailer_id').find('option').not(':first').remove();
+        $.each(data, function (index, value) {
+          // alert( index + ": " + value );
+          $('#retailer_id').append('<option value="' + value + '">' + value + '</option>');
+        });
+        // alert(status);
+      });
+        // alert(status);
+      };
+
+
+  function get_ret_id1() {
+    var iid_par = document.getElementById("iid_par").value;
+    // alert('Inst ID = ' + inst_id);
+
+    // AJAX CALLL DEPLOYED
+    $.get($SCRIPT_ROOT + '/get_rc_ret_id',
+      {
+        Instituiton_ID: iid_par
+      },
+      function (data, status) {
+        // alert(data);
+        $('#rid_par').find('option').not(':first').remove();
+        $.each(data, function (index, value) {
+          // alert( index + ": " + value );
+          $('#rid_par').append('<option value="' + value + '">' + value + '</option>');
+        });
+        // alert(status);
+      });
+  }
+
+
+  function DR(TERM) {
+    var params;
+    params = TERM.toString().split(',');
+    var retVal = confirm("Do you want to continue ?");
+    if (retVal == true) {
+      params = TERM.toString().split(',');
+      // alert(params);
+      // alert(params[0]+" "+params[1]+" "+params[6]+" "+params[7]+" "+params[2]+" "+params[3]+" "+params[4]+" "+params[5]+" "+params[8]+" "+params[9]);
+      // alert(params[0]+params[1]+params[2]+params[3]+params[4]+params[5]+params[6]+params[7]+params[8]+params[9]);
+      $.post($SCRIPT_ROOT + '/commission_type',
+        {
+          delete: "delete",
+          institution_id: params[0],
+          retailer_id: params[1],
+          channel  : params[2],
+          card_type: params[3],
+          mcc: params[4],
+          bin: params[5],
+          transaction_identifier: params[6],
+          commision_type: params[7],
+          commision_sub_type: params[8],
+          status: params[9],
+          priority:params[10],
+          region: params[11],
+          rubro: params[12]
+        },
+        function (data, status) {
+          // console.log(data);
+          // alert(data);
+          // alert(status);
+          // window.location.reload();
+          RD_URL();
+        });
+      // return true;
+    }
+  }
+
+
+  // To update and show the modal2
+  function UR(TERM) {
+    var par;
+    par = TERM.toString().split(',');
+    // alert(" \nPar Value 0 = " + par[0] + " \nPar Value 1 = " + par[1]+ " \nPar Value 2 = " + par[2]+ " \nPar Value 3 = " + par[3]+ " \nPar Value 4 = " + par[4]+ " \nPar Value 5 = " + par[5]+ " \nPar Value 6 = " + par[6]+ " \nPar Value 7 = " + par[7]+ " \nPar Value 8 = " + par[8]+ " \nPar Value 9 = " + par[9]);
+
+    document.getElementById("institution_id").value = par[0].replace(/\s+/g, '');
+    document.getElementById("ret_id").value = par[1].replace(/\s+/g, '');
+    document.getElementById("channel_upm2").value = par[2].replace(/\s+/g, '');
+    document.getElementById("ump2_priority").value = par[10].replace(/\s+/g, '');
+    
+
+    for (var option of document.getElementById("upm2_ct").options) {
+      if (option.value === par[3].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    for (var option of document.getElementById("upm2_mct").options) {
+      if (option.value === par[4].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    for (var option of document.getElementById("upm2_bin").options) {
+      if (option.value === par[5].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    for (var option of document.getElementById("upm2_tid").options) {
+      if (option.value === par[6].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    for (var option of document.getElementById("upm2_com_t").options) {
+      if (option.value === par[7].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    for (var option of document.getElementById("upm2_com_st").options) {
+      if (option.value === par[8].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+
+    for (var option of document.getElementById("upm2_st").options) {
+      if (option.value === par[9].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    for (var option of document.getElementById("uregion").options) {
+      if (option.value === par[11].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    for (var option of document.getElementById("upm2_rb").options) {
+      if (option.value === par[12].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    
+    // To Show The Update Form
+    $('#myModal2').modal('show');
+  }
+
+
+  $("#insert").click(function () {
+    $('#myModal1').modal('show');
+  });
+
+</script>
+{% endblock %}

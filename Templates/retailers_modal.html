@@ -1,0 +1,336 @@
+<style>
+	ul.checkout-bar li {
+		width: 20.5%;
+	}
+
+	ul.checkout-bar {
+		width: 90%;
+	}
+</style>
+
+<div class="row">
+	<div class="col-xs-12">
+
+		<div class="checkout-wrap col-md-12 col-sm-12 col-xs-12">
+			<ul class="checkout-bar">
+				<li class="active"><a href="#get-started" data-toggle="tab">Tab 1</a>
+				</li>
+				<li><a href="#about-you" data-toggle="tab">Tab 2</a>
+				</li>
+				<li><a href="#excenta" data-toggle="tab">Tab 3</a>
+				</li>
+				<li><a href="#patrimony" data-toggle="tab">Tab 4</a></li>
+			</ul>
+		</div>
+
+		<div class="tabbable-panel">
+			<div class="tabbable-line">
+				<ul class="nav nav-tabs " id="abc">
+					<li class="active" data-move="1"><a href="#get-started" data-toggle="tab" id="a">Tab 1</a>
+					</li>
+					<li data-move="2"><a href="#about-you" data-toggle="tab" id="b">Tab 2</a>
+					</li>
+					<li data-move="3"><a href="#excenta" data-toggle="tab" id="d">Tab 3</a>
+					</li>
+					<li data-move="4"><a href="#patrimony" data-toggle="tab" id="c">Tab 4</a>
+					</li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane container active" id="get-started">
+						<div class="col-md-8">
+							<div class="form-group">
+								<form id='ingresos' action="{{ url_for('retailers') }}" method="post">
+
+									<label class="check">Retailer ID</label>
+
+									<div class="col-md-9 hint--right hint--success"
+										data-hint="Please insert RetailerId">
+										<input class="form-control" type="text" id="RetailerId" name="RetailerId"
+											pattern="^[a-zA-Z0-9]*$" readonly>
+									</div>
+									<br>
+
+									{% set count = 1 %}
+									{% for col in retailer_cols[1:11] %}
+									<label> {{ col | add_space }} </label>
+									<div class="col-md-9 hint--right hint--success" data-hint="Please insert {{col}}">
+
+										{% if selects[count] != 0 and selects[count] %}
+
+										<select id="{{col}}" name="{{col}}" class="form-control">
+											{% if count == 1 %}
+
+											{% for item in selects[count] %}
+											<option value="{{item.institution_id_code}}">
+												{{item.institution_id_code}} - {{item.institution_id_desc}} </option>
+											{% endfor %}
+
+											{% elif count == 2 or count == 3 %}
+
+											{% for item in selects[count] %}
+											<option value="{{item.code}}">{{item.code}}-{{item.description}}
+											</option>
+											{% endfor %}
+
+											{% elif count == 4 %}
+
+											{% for item in selects[count] %}
+											<option
+												value="{{item.retailer_acquirer_country_code_}}{{item.retailer_acquirer_state_code_}}{{item.retailer_acquirer_city_code_}}">
+												{{item.retailer_acquirer_country_code_}}-{{item.retailer_acquirer_state_code_}}-{{item.retailer_acquirer_city_code_}}
+											</option>
+											{% endfor %}
+
+											{% elif count == 7 %}
+
+											{% for item in selects[count] %}
+											<option value="{{item.two_letters}}">{{item.english_desc}}
+											</option>
+											{% endfor %}
+
+											{% elif count == 8 %}
+
+											{% for item in selects[count] %}
+											<option value="{{item.state_code}}">{{item.state_description}}
+											</option>
+											{% endfor %}
+
+											{% elif count == 9 %}
+
+											{% for item in selects[count] %}
+											<option value="{{item.city_code}}">{{item.city_description}}
+											</option>
+											{% endfor %}
+
+											{% elif count == 10 %}
+
+											{% for item in selects[count] %}
+											<option value="{{item.numeric_code}}">{{item.english_desc}}
+											</option>
+											{% endfor %}
+
+											{% else %}
+
+											{% for item in selects[count] %}
+											<option value="{{item.description}}">{{item.description}}
+											</option>
+											{% endfor %}
+
+											{% endif %}
+										</select>
+
+										{% else %}
+
+										<input class="form-control" type="text" id="{{col}}" name="{{col}}">
+
+										{% endif %}
+									</div>
+
+									<br>
+									{% set count = count + 1 %}
+									{% endfor %}
+
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane container" id="about-you">
+						<div class="col-md-8 ">
+							<div class="form-group">
+
+								{% set count = 11 %}
+								{% for col in retailer_cols[11:20] %}
+								<label> {{ col | add_space }} </label>
+								<div class="col-md-9 hint--right hint--success" data-hint="Please insert {{col}}">
+
+									{% if selects[count] != 0 and selects[count] %}
+									<select id="{{col}}" name="{{col}}" class="form-control">
+										{% for item in selects[count] %}
+										<option value="{{item.description}}">{{item.description}} </option>
+										{% endfor %}
+									</select>
+									{% else %}
+									<input class="form-control" type="text" id="{{col}}" name="{{col}}">
+									{% endif %}
+
+
+								</div>
+								<br>
+								{% set count = count + 1 %}
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane container" id="excenta">
+						<div class="col-md-8 ">
+							<div class="form-group">
+
+								{% set count = 20 %}
+								{% for col in retailer_cols[20:30] %}
+								<label> {{ col | add_space }} </label>
+								<div class="col-md-9 hint--right hint--success" data-hint="Please insert {{col}}">
+									{% if selects[count] != 0 and selects[count] %}
+									<select id="{{col}}" name="{{col}}" class="form-control">
+										{% if count == 22 or count == 24 or count == 25 or count == 27 or count == 28 or
+										count == 29 %}
+
+										{% for item in selects[count] %}
+										<option value="{{item.code}}">{{item.description}} </option>
+										{% endfor %}
+										{% else %}
+										{% for item in selects[count] %}
+										<option value="{{item.description}}">{{item.description}} </option>
+										{% endfor %}
+										{% endif %}
+									</select>
+									{% else %}
+										{% if count == 23 %}
+										<input class="form-control" type="text" id="{{col}}" name="{{col}}" maxlength="10" pattern="\d{8}-[a-zA-Z0-9]|\d{8}" placeholder="12345678-K">
+										{% else %}
+										<input class="form-control" type="text" id="{{col}}" name="{{col}}">
+										{% endif %}
+									{% endif %}
+								</div>
+								<br>
+								{% set count = count + 1 %}
+								{% endfor %}
+
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane container" id="patrimony">
+						<div class="col-md-8">
+							<div class="form-group">
+
+								{% set count = 30 %}
+								{% for col in retailer_cols[30:] %}
+								<label> {{ col | add_space }} </label>
+								<div class="col-md-9 hint--right hint--success" data-hint="Please insert {{col}}">
+									{% if selects[count] != 0 and selects[count] %}
+									<select id="{{col}}" name="{{col}}" class="form-control">
+										{% if count == 30 or count == 31 or count == 35 %}
+
+										{% for item in selects[count] %}
+										<option value="{{item.code}}">{{item.description}} </option>
+										{% endfor %}
+										{% else %}
+										{% for item in selects[count] %}
+										<option value="{{item.description}}">{{item.description}} </option>
+										{% endfor %}
+										{% endif %}
+									</select>
+									{% else %}
+										{% if count == 37 %}
+										<input class="form-control" type="text" id="{{col}}" name="{{col}}" maxlength="17">
+										{% elif count == 39 %}
+										<input class="form-control" type="text" id="{{col}}" name="{{col}}" maxlength="3">
+										{% else %}
+										<input class="form-control" type="text" id="{{col}}" name="{{col}}" ">
+										{% endif %}
+									{% endif %}
+								</div>
+								<br>
+								{% set count = count + 1 %}
+								{% endfor %}
+
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<br>
+			<input type="button" id="back" class="btn btn-info " value="Back" />&nbsp;
+			<input type="button" id="next" class="btn btn-info " value="Next" /> &nbsp;
+			<input type="button" class="btn btn-success " style="display:;" id="create" value="Create"
+				onclick="submitForms()" />
+			<button name="update_s" class="btn btn-warning " id="update_s" style="display: none;"
+				onclick="submitForms()">Update</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		var href = $(e.target).attr('href');
+		var $carr = $(".nav-tabs  a[href='" + href + "']").parent();
+		var $curr = $(".checkout-bar  a[href='" + href + "']").parent();
+		$('.checkout-bar li').removeClass();
+		$('.nav-tabs li').removeClass();
+		$carr.addClass("active");
+		$curr.addClass("active");
+		$curr.prevAll().addClass("visited");
+	});
+
+	$('#next').click(function () {
+
+		var val = $('ul#abc').find('li.active').data('move');
+
+		if (val != 4) {
+			var val1 = val + 1;
+			//alert(val1);
+
+
+			var href = $('ul#abc li[data-move =' + val1 + ']').children().attr('href');
+			var href1 = $('ul#abc li[data-move =' + val + ']').children().attr('href');
+			$(href1).removeClass("active");
+			$(href).addClass("active");
+			var $carr = $(".nav-tabs  a[href='" + href + "']").parent();
+			var $curr = $(".checkout-bar  a[href='" + href + "']").parent();
+			$('.checkout-bar li').removeClass();
+			$('.nav-tabs li').removeClass();
+			$carr.addClass("active");
+			$curr.addClass("active");
+			$curr.prevAll().addClass("visited");
+		}
+
+
+	});
+
+
+	$('#back').click(function () {
+
+		var val = $('ul#abc').find('li.active').data('move');
+
+		if (val != 1) {
+			var val1 = val - 1;
+			//alert(val1);
+
+
+			var href = $('ul#abc li[data-move =' + val1 + ']').children().attr('href');
+			var href1 = $('ul#abc li[data-move =' + val + ']').children().attr('href');
+			$(href1).removeClass("active");
+			$(href).addClass("active");
+			var $carr = $(".nav-tabs  a[href='" + href + "']").parent();
+			var $curr = $(".checkout-bar  a[href='" + href + "']").parent();
+			$('.checkout-bar li').removeClass();
+			$('.nav-tabs li').removeClass();
+			$carr.addClass("active");
+			$curr.addClass("active");
+			$curr.prevAll().addClass("visited");
+		}
+
+
+	});
+
+
+
+</script>
+
+<script>
+	submitForms = function () {
+		document.forms["ingresos"].submit();
+		document.forms["excentas"].submit();
+		document.forms["deudas"].submit();
+		document.forms["patrimonio"].submit();
+	}
+</script>
+<style>
+	.check {
+
+		width: 192px;
+
+	}
+</style>

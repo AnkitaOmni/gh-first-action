@@ -1,0 +1,682 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<!-- Commented By Tejaswini[30-Sep-2022] - Added Prepaid, Rubro values for new field -->
+
+<style>
+  div.dataTables_filter {
+    text-align: right;
+    display: none;
+  }
+</style>
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Discounts Configuration</h3>
+      </div>
+
+
+      <div class="box-body">
+        <div class="row">
+          <!-- SEARCH BOX & ADD BUTTON -->
+          <div class="col-xs-12">
+            <div class="pull-right">
+              <form class="form-inline" method="POST" action="" name="search">
+                <div class="form-group">
+
+                  <input class="form-control input-sm" type="text" name="key1" placeholder="Search Retailer ID">
+                  <button id="search" name="search" type="submit" class="btn btn-info btn-sm"><i class="fa fa-search"></i></button>
+                  <button id="insert" name="insert" type="button" class="btn btn-success btn-sm">Add</button>
+
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="col-xs-12">
+            <div class="table-responsive no-padding">
+              <table id="example1" class="table table-bordered table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Inst</th>
+                    <th>Retailer</th>
+                    <th>Channel</th>
+                    <th>Msg Type</th>
+                    <th>Proc Code</th>
+                    <th>Resp Code</th>
+                    <th>DB Val</th>
+                    <th>CR Val</th>
+                    <th>PR Val</th>
+                    <th>MCC</th>
+                    <th>MCC DB Val</th>
+                    <th>MCC CR Val</th>
+                    <th>MCC PR Val</th>
+                    <th>Bin</th>
+                    <th>Bin Val</th>
+                    <th>Dom Val</th>
+                    <th>Int Val</th>  
+                    <th>Rubro</th>
+                    <th>Rubro DB Val</th>
+                    <th>Rubro CR Val</th>
+                    <th>Rubro PR Val</th>
+                    <th>Region</th>
+                    <th>Region DB Val</th>
+                    <th>Region CR Val</th>
+                    <th>Region PR Val</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for rc in discounts %}
+                  <tr>
+                    <td>{{rc.institution_id}}</td>
+                    <td>{{rc.retailer_id}}</td>
+                    <td>{{rc.channel}}</td>
+                    <td>{{rc.message_type}}</td>
+                    <td>{{rc.processing_code}}</td>
+                    <td>{{rc.response_code}}</td>
+                    <td>{{rc.debit_value}}</td>
+                    <td>{{rc.credit_value}}</td>
+                    <td>{{rc.prepaid_value}}</td>
+                    <td>{{rc.mcc}}</td>
+                    <td>{{rc.mcc_debit_value}}</td>
+                    <td>{{rc.mcc_credit_value}}</td>
+                    <td>{{rc.mcc_prepaid_value}}</td>
+                    <td>{{rc.bin}}</td>
+                    <td>{{rc.bin_value}}</td>
+                    <td>{{rc.domestic_value}}</td>
+                    <td>{{rc.international_value}}</td>
+                    <td>{{rc.rubro}}</td>
+                    <td>{{rc.rubro_debit_value}}</td>
+                    <td>{{rc.rubro_credit_value}}</td>
+                    <td>{{rc.rubro_prepaid_value}}</td>
+                    <td>{{rc.region}}</td>
+                    <td>{{rc.region_debit_value}}</td>
+                    <td>{{rc.region_credit_value}}</td>
+                    <td>{{rc.region_prepaid_value}}</td>
+
+                    <td align="right" width="10%">
+                      <button
+                        value="{{rc.institution_id}}, {{rc.retailer_id}}, {{rc.channel}}, {{rc.message_type}}, {{rc.processing_code}}, {{rc.response_code}}, {{rc.debit_value}}, {{rc.credit_value}},{{rc.prepaid_value}}, {{rc.mcc}}, {{rc.mcc_debit_value}}, {{rc.mcc_credit_value}},{{rc.mcc_prepaid_value}}, {{rc.bin}}, {{rc.bin_value}}, {{rc.domestic_value}}, {{rc.international_value}},{{rc.rubro}},{{rc.rubro_debit_value}},{{rc.rubro_credit_value}},{{rc.rubro_prepaid_value}},{{rc.region}},{{rc.region_debit_value}},{{rc.region_credit_value}},{{rc.region_prepaid_value}}"
+                        class="btn btn-warning btn-sm" onclick="UR(this.value); get_rubro_id_upd()"><i class="fa fa-edit"></i></button>
+                    </td>
+                    <td align="right" width="10%">
+                        <button
+                        value="{{rc.institution_id}}, {{rc.retailer_id}}, {{rc.channel}}, {{rc.message_type}}, {{rc.processing_code}}, {{rc.response_code}}, {{rc.debit_value}}, {{rc.credit_value}},{{rc.prepaid_value}}, {{rc.mcc}}, {{rc.mcc_debit_value}}, {{rc.mcc_credit_value}},{{rc.mcc_prepaid_value}}, {{rc.bin}}, {{rc.bin_value}}, {{rc.domestic_value}}, {{rc.international_value}},{{rc.rubro}},{{rc.rubro_debit_value}},{{rc.rubro_credit_value}},{{rc.rubro_prepaid_value}},{{rc.region}},{{rc.region_debit_value}},{{rc.region_credit_value}},{{rc.region_prepaid_value}}"
+                        class="btn btn-danger btn-sm" onclick="DR(this.value)" ><i class="fa fa-trash"></i></button>
+                    </td> 
+
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM STARTS ingresos -->
+    <form id="ingresos" name="ingresos" action="{{ url_for('discount_and_promotions_type') }}" method="POST">
+      <!-- Modal1 -->
+      <div id="myModal1" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Add Discount Profiles</h4>
+            </div>
+
+            <div class="modal-body">
+
+              Instituiton ID:<br>
+              <select id="inst_id" name="institution_id" class="form-control input-sm pull-right" onchange="get_ret_id()"
+                required>
+                <option value=DEFAULT>DEFAULT</option>
+                {% for i_id in IID %}
+                <option value={{i_id.institution_id_code}}>{{i_id.institution_id_code}}</option>
+                {% endfor %}
+              </select>
+
+              Retailer ID:<br>
+              <!-- <select id="retailer_id" name="retailer_id" class="form-control input-sm pull-right" required>
+                <option value=DEFAULT>DEFAULT</option>
+              </select> -->
+              <input type="text" id="retailer_id" name="retailer_id" class="form-control input-sm pull-right" 
+                maxlength="20" pattern="^[a-zA-Z0-9]+$" required onfocusout="get_rubro_id()">
+
+              Channel:<br>
+              <select id="channel" name="channel" class="form-control input-sm pull-right" 
+                required>
+                <option value=DEFAULT>DEFAULT</option>
+                {% for ch in IID %}
+                <option value={{ch.channel_name}}>{{ch.channel_name}}</option>
+                {% endfor %}
+              </select>
+
+
+              Message type:<br>
+              <select id="message_type" name="message_type" class="form-control input-sm pull-right"
+                placeholder="message_type" required>
+                {% for msg in Msg_Type %}
+                <option value={{msg.code}}> {{msg.code}} - {{msg.description}}</option>
+                {% endfor %}
+              </select>
+
+              Processing Code:<br>
+              <select id="processing_code" name="processing_code" class="form-control input-sm pull-right"
+                placeholder="processing_code" required>
+                {% for pc in Pro_Code %}
+                <option value={{pc.code}}>{{pc.code}} - {{pc.description}}</option>
+                {% endfor %}
+              </select>
+
+              Response code:<br>
+              <select id="response_code" name="response_code" class="form-control input-sm pull-right"
+                placeholder="response_code" required>
+                {% for rc in Res_Code %}
+                <option value={{rc.code}}>{{rc.code}} - {{rc.description}}</option>
+                {% endfor %}
+              </select>
+
+              Debit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="debit_value" name="debit_value"
+                class="form-control input-sm pull-right" placeholder="0.00" step="0.01" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>
+
+              Credit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" id="credit_value" name="credit_value" class="form-control input-sm pull-right"
+                placeholder="0.00"  step="0.01" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>
+
+              Prepaid Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" id="prepaid_value" name="prepaid_value" class="form-control input-sm pull-right"
+                  placeholder="0.00"  step="0.01" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>  
+
+              Merchant Category Code:<br>
+              <input type="text" id="mcc" name="mcc" class="form-control input-sm pull-right" placeholder="MCC"
+                 pattern="^[a-zA-Z0-9]+$" title="Please do not enter special characters" required>
+
+              Merchant Debit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="mcc_debit_value" name="mcc_debit_value"
+                class="form-control input-sm pull-right" placeholder="0.00" ppattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>
+
+              Merchant Credit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="mcc_credit_value" name="mcc_credit_value"
+                class="form-control input-sm pull-right" placeholder="0.00" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>
+
+              Merchant Prepaid Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="mcc_prepaid_value" name="mcc_prepaid_value"
+                  class="form-control input-sm pull-right" placeholder="0.00" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$"  required>  
+
+              Bin:<br>
+              <input type="text" id="bin" name="bin" class="form-control input-sm pull-right" step="0.01"
+                title="Percentage" placeholder="bin" required>
+
+              Bin Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="bin_value" name="bin_value" class="form-control input-sm pull-right"
+                title="Percentage" placeholder="0.00" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>
+
+              Domestic Value:<br>
+              <input type="text" step="0.01" id="d_value" name="domestic_value" class="form-control input-sm pull-right"
+                title="Percentage" placeholder="0.00" required>
+
+              International Value:<br>
+              <input type="text" step="0.01" id="i_value" name="international_value" class="form-control input-sm pull-right"
+                title="Percentage" placeholder="0.00" required>
+                
+              Rubro:<br>
+              <input type="text" id="rubro" name="rubro" class="form-control input-sm pull-right" placeholder="Rubro"
+                maxlength="16" value="" pattern="^[a-zA-Z0-9]+$"  readonly>
+  
+              Rubro Debit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="rubro_debit_value" name="rubro_debit_value"
+                class="form-control input-sm pull-right" placeholder="0.00" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>
+  
+              Rubro Credit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="rubro_credit_value" name="rubro_credit_value"
+                class="form-control input-sm pull-right" placeholder="0.00" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>
+  
+              Rubro Prepaid Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="rubro_prepaid_value" name="rubro_prepaid_value"
+                class="form-control input-sm pull-right" placeholder="0.00" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>   
+
+                Region:<br>
+                <input type="text" id="region" name="region" class="form-control input-sm pull-right" placeholder="Region"
+                  maxlength="16" pattern="^[a-zA-Z0-9]+$">
+    
+                Region Debit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+                <input type="text" step="0.01" id="region_debit_value" name="region_debit_value"
+                  class="form-control input-sm pull-right" placeholder="0.00" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>
+    
+                Region Credit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+                <input type="text" step="0.01" id="region_credit_value" name="region_credit_value"
+                  class="form-control input-sm pull-right" placeholder="0.00" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required>
+    
+                Region Prepaid Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+                <input type="text" step="0.01" id="region_prepaid_value" name="region_prepaid_value"
+                  class="form-control input-sm pull-right" placeholder="0.00" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" required> 
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-primary" type="submit">OK</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+    <form method="POST" action="{{ url_for('discount_and_promotions_type') }}">
+      <!-- Modal2 -->
+      <div id="myModal2" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Update Discount Profiles</h4>
+            </div>
+
+            <div class="modal-body">
+
+              Instituiton ID:<br>
+              <input type="text" value="" id="upm2_institution_id" name="upm2_institution_id" class="form-control input-sm pull-right"
+              pattern="^[a-zA-Z0-9]+$" readonly>
+
+              Retailer ID:<br>
+              <input type="text" value="" id="upm2_retailer_id" name="upm2_retailer_id" class="form-control input-sm pull-right"
+                readonly>
+
+              Channel:<br>
+              <input type="text" id="upm2_channel" name="upm2_channel" class="form-control input-sm pull-right"
+                value="" readonly>
+
+              <br>Message type :<br>
+              <select id="upm2_message_type" name="upm2_message_type" class="form-control input-sm pull-right" value="">
+                {% for msg in Msg_Type %}
+                <option value={{msg.code}}>Update To - [ {{msg.code}} - {{msg.description}} ]</option>
+                {% endfor %}
+              </select>
+
+              <br>Processing Code :<br>
+              <select id="upm2_processing_code" name="upm2_processing_code" class="form-control input-sm pull-right"
+                value="">
+                {% for pc in Pro_Code %}
+                <option value={{pc.code}}>Update To - [ {{pc.code}} - {{pc.description}} ]</option>
+                {% endfor %}
+              </select>
+
+              <br>Response code :<br>
+              <select id="upm2_response_code" name="upm2_response_code" class="form-control input-sm pull-right"
+                value="">
+                {% for rc in Res_Code %}
+                <option value={{rc.code}}>Update To - [ {{rc.code}} - {{rc.description}} ]</option>
+                {% endfor %}
+              </select>
+
+              Debit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="upm2_debit_value" name="upm2_debit_value"
+                class="form-control input-sm pull-right" placeholder="debit_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$"  value="">
+
+              Credit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="upm2_credit_value" name="upm2_credit_value"
+                class="form-control input-sm pull-right" placeholder="credit_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="">
+
+              Prepaid Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="upm2_prepaid_value" name="upm2_prepaid_value"
+                class="form-control input-sm pull-right" placeholder="prepaid_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$"  value="">                
+
+              Merchant Category Code:<br>
+              <input type="text" id="upm2_mcc" name="upm2_mcc" class="form-control input-sm pull-right"
+                placeholder="MCC"  value="">
+
+              Merchant Debit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="upm2_mcc_debit_value" name="upm2_mcc_debit_value"
+                class="form-control input-sm pull-right" placeholder="mcc_debit_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="">
+
+              Merchant Credit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="upm2_mcc_credit_value" name="upm2_mcc_credit_value"
+                class="form-control input-sm pull-right" placeholder="mcc_credit_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="">
+
+              Merchant Prepaid Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="upm2_mcc_prepaid_value" name="upm2_mcc_prepaid_value"
+                class="form-control input-sm pull-right" placeholder="mcc_prepaid_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="">  
+
+              Bin:<br>
+              <input type="text" step="0.01" id="upm2_bin" name="upm2_bin" class="form-control input-sm pull-right"
+                title="Percentage" value="0000">
+
+              Bin Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="upm2_bin_value" name="upm2_bin_value"
+                class="form-control input-sm pull-right" title="Percentage" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="0.00">
+
+              Domestic Value:<br>
+              <input type="text" step="0.01" id="upm2_d_value" name="upm2_d_value"
+                class="form-control input-sm pull-right" title="Percentage" value="0.00" required>
+
+              International Value:<br>
+              <input type="text" step="0.01" id="upm2_i_value" name="upm2_i_value"
+                class="form-control input-sm pull-right" title="Percentage" value="0.00" required>
+
+              Rubro:<br>
+              <input type="text" id="upm2_rubro" name="upm2_rubro" class="form-control input-sm pull-right"
+                placeholder="Rubro"  pattern="^[a-zA-Z0-9]+$" value="" default="0" readonly>
+  
+              Rubro Debit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="upm2_rubro_debit_value" name="upm2_rubro_debit_value"
+                class="form-control input-sm pull-right" placeholder="rubro_debit_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="">
+  
+              Rubro Credit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="upm2_rubro_credit_value" name="upm2_rubro_credit_value"
+                class="form-control input-sm pull-right" placeholder="rubro_credit_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="">
+  
+              Rubro Prepaid Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+              <input type="text" step="0.01" id="upm2_rubro_prepaid_value" name="upm2_rubro_prepaid_value"
+                class="form-control input-sm pull-right" placeholder="rubro_prepaid_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="">
+                
+                
+                Region:<br>
+                <input type="text" id="upm2_region" name="upm2_region" class="form-control input-sm pull-right"
+                  placeholder="Region"  pattern="^[a-zA-Z0-9]+$" value="">
+    
+                Region Debit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+                <input type="text" step="0.01" id="upm2_region_debit_value" name="upm2_region_debit_value"
+                  class="form-control input-sm pull-right" placeholder="rubro_debit_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="">
+    
+                Region Credit Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+                <input type="text" step="0.01" id="upm2_region_credit_value" name="upm2_region_credit_value"
+                  class="form-control input-sm pull-right" placeholder="rubro_credit_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="">
+    
+                Region Prepaid Value:<span style="color: red;">(mixed Discount Type value must contain : like fixed value:% value e.g 100:5)</span><br>
+                <input type="text" step="0.01" id="upm2_region_prepaid_value" name="upm2_region_prepaid_value"
+                  class="form-control input-sm pull-right" placeholder="rubro_prepaid_value" pattern="^\d{1,}(([.]?\d{1,3})?(:\d{1,3})?[.]?)?\d{0,}$" value="">
+
+              <input type="hidden" name="update" id="update">
+              <input type="hidden" name="upm2_channel_H" id="upm2_channel_H">
+              <input type="hidden" name="upm2_message_type_H" id="upm2_message_type_H">
+              <input type="hidden" name="upm2_processing_code_H" id="upm2_processing_code_H">
+              <input type="hidden" name="upm2_response_code_H" id="upm2_response_code_H">
+              <input type="hidden" name="upm2_debit_value_H" id="upm2_debit_value_H">
+              <input type="hidden" name="upm2_credit_value_H" id="upm2_credit_value_H">
+              <input type="hidden" name="upm2_prepaid_value_H" id="upm2_prepaid_value_H">
+              <input type="hidden" name="upm2_mcc_H" id="upm2_mcc_H">
+              <input type="hidden" name="upm2_mcc_debit_value_H" id="upm2_mcc_debit_value_H">
+              <input type="hidden" name="upm2_mcc_credit_value_H" id="upm2_mcc_credit_value_H">
+              <input type="hidden" name="upm2_mcc_prepaid_value_H" id="upm2_mcc_prepaid_value_H">
+              <input type="hidden" name="upm2_bin_H" id="upm2_bin_H">
+              <input type="hidden" name="upm2_bin_value_H" id="upm2_bin_value_H">
+              <input type="hidden" name="upm2_d_value_H" id="upm2_d_value_H">
+              <input type="hidden" name="upm2_i_value_H" id="upm2_i_value_H">
+              <input type="hidden" name="upm2_rubro_H" id="upm2_rubro_H">
+              <input type="hidden" name="upm2_rubro_debit_value_H" id="upm2_rubro_debit_value_H">
+              <input type="hidden" name="upm2_rubro_credit_value_H" id="upm2_rubro_credit_value_H">
+              <input type="hidden" name="upm2_rubro_prepaid_value_H" id="upm2_rubro_prepaid_value_H">
+              <input type="hidden" name="upm2_region_H" id="upm2_region_H">
+              <input type="hidden" name="upm2_region_debit_value_H" id="upm2_region_debit_value_H">
+              <input type="hidden" name="upm2_region_credit_value_H" id="upm2_region_credit_value_H">
+              <input type="hidden" name="upm2_region_prepaid_value_H" id="upm2_region_prepaid_value_H">
+
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-primary" type="submit">OK</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <!-- /.Modal2 -->
+  </div>
+</div>
+
+<!-- page script -->
+<script>
+
+  $(function () {
+    var data;
+    $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+    var table = $('#example1').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false
+    });
+});
+
+
+  // Redirect Func
+  function RD_URL() {
+    // window.location.replace($SCRIPT_ROOT + "/discount_and_promotions_type");
+    window.location.reload()
+  }
+
+  // To Populate DropDown Lists On Create
+  function get_ret_id() {
+    // var inst_id = document.getElementById("inst_id").value;
+    // alert('Inst ID = ' + inst_id);
+
+    // AJAX CALLL DEPLOYED
+    $.get($SCRIPT_ROOT + '/get_rc_ret_id',
+      {
+        Instituiton_ID: inst_id
+      },
+      // function (data, status) {
+      //   // alert(data);
+      //   $('#retailer_id').find('option').not(':first').remove();
+      //   $.each(data, function (index, value) {
+      //     // alert( index + ": " + value );
+      //     $('#retailer_id').append('<option value="' + value + '">' + value + '</option>');
+      //   });
+      //   // alert(status);
+      // }
+      );
+  }
+
+  // To Populate DropDown List On Update
+  function get_ret_id1() {
+    var iid_par = document.getElementById("iid_par").value;
+    // alert('Inst ID = ' + inst_id);
+
+    // AJAX CALLL DEPLOYED
+    $.get($SCRIPT_ROOT + '/get_rc_ret_id',
+      {
+        Instituiton_ID: iid_par
+      },
+      function (data, status) {
+        // alert(data);
+        $('#rid_par').find('option').not(':first').remove();
+        $.each(data, function (index, value) {
+          // alert( index + ": " + value );
+          $('#rid_par').append('<option value="' + value + '">' + value + '</option>');
+        });
+        // alert(status);
+      });
+  }
+
+  function get_rubro_id() {
+    var retailer_id = document.getElementById("retailer_id").value;
+    var inst_id = document.getElementById("inst_id").value;
+    // AJAX CALLL DEPLOYED
+    $.get($SCRIPT_ROOT + '/getrubro',
+      {
+        retailer: retailer_id,
+        inst_id: inst_id
+      },
+      function (data, status) {
+        if ($.trim(data) == null || $.trim(data) == ''){ 
+          document.getElementById("rubro").value = '0';
+               }
+         else{
+          document.getElementById("rubro").value = data;
+         }
+        
+      });
+  }
+
+  function get_rubro_id_upd() {
+    var retailer_id = document.getElementById("upm2_retailer_id").value;
+    var inst_id = document.getElementById("upm2_institution_id").value;
+    // AJAX CALLL DEPLOYED
+    $.get($SCRIPT_ROOT + '/getrubro',
+      {
+        retailer: retailer_id,
+        inst_id: inst_id
+      },
+      function (data, status) {
+        if ($.trim(data) == null || $.trim(data) == ''){ 
+          document.getElementById("upm2_rubro").value = '0';
+               }
+         else{
+          document.getElementById("upm2_rubro").value = data;
+         }
+      });
+  }
+
+  // DELETE RECORD
+  function DR(TERM) {
+    var params
+    var retVal = confirm("DELETE THE DATA ?");
+    if (retVal == true) {
+      params = TERM.toString().split(',');
+      // alert(params);
+      $.post($SCRIPT_ROOT + '/discount_and_promotions_type',
+        {
+          delete: "delete",
+          institution_id: params[0].replace(/\s+/g, ''),
+          retailer_id: params[1].replace(/\s+/g, ''),
+          channel: params[2].replace(/\s+/g, ''),
+          message_type: params[3].replace(/\s+/g, ''),
+          processing_code: params[4].replace(/\s+/g, ''),
+          response_code: params[5].replace(/\s+/g, ''),
+          debit_value: params[6].replace(/\s+/g, ''),
+          credit_value: params[7].replace(/\s+/g, ''),
+          prepaid_value: params[8].replace(/\s+/g, ''),
+          mcc: params[9].replace(/\s+/g, ''),
+          mcc_debit_value: params[10].replace(/\s+/g, ''),
+          mcc_credit_value: params[11].replace(/\s+/g, ''),
+          mcc_prepaid_value: params[12].replace(/\s+/g, ''),
+          bin: params[13].replace(/\s+/g, ''),
+          bin_value: params[14].replace(/\s+/g, ''),
+          dom_val: params[15].replace(/\s+/g, ''),
+          i_val: params[16].replace(/\s+/g, ''),
+          rubro: params[17].replace(/\s+/g, ''),
+          rubro_debit_value: params[18].replace(/\s+/g, ''),
+          rubro_credit_value: params[19].replace(/\s+/g, ''),
+          rubro_prepaid_value: params[20].replace(/\s+/g, ''),
+          region: params[21].replace(/\s+/g, ''),
+          region_debit_value: params[22].replace(/\s+/g, ''),
+          region_credit_value: params[23].replace(/\s+/g, ''),
+          region_prepaid_value: params[24].replace(/\s+/g, ''),
+        },
+        function (data, status) {
+          RD_URL();
+        });
+    }
+  }
+
+  // To update and show the modal2
+  function UR(TERM) {
+
+    var par = TERM.toString().split(',');
+    // alert(par);
+    // alert(par[0]);
+    // alert(par[1]);
+    // alert(par[2]);
+    // alert(par[3]);
+    // alert(par[4]);
+    // alert(par[5]);
+    // alert(par[6]);
+    // alert(par[7]);
+    // alert(par[8]);
+    // alert(par[9]);
+    // alert(par[10]);
+    // alert(par[21]);
+    // alert(par[22]);
+    // alert(par[23]);
+    // alert(par[24]);
+    for (var option of document.getElementById("upm2_message_type").options) {
+      if (option.value === par[3].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    for (var option of document.getElementById("upm2_processing_code").options) {
+      if (option.value === par[4].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    for (var option of document.getElementById("upm2_response_code").options) {
+      if (option.value === par[5].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+
+    // Not-Hidden Input Values Settings
+    document.getElementById("upm2_institution_id").value = par[0].replace(/\s+/g, '');
+    document.getElementById("upm2_retailer_id").value = par[1].replace(/\s+/g, '');
+    document.getElementById("upm2_channel").value = par[2].replace(/\s+/g, '');
+    document.getElementById("upm2_debit_value").value = par[6].replace(/\s+/g, '');
+    document.getElementById("upm2_credit_value").value = par[7].replace(/\s+/g, '');
+    document.getElementById("upm2_prepaid_value").value = par[8].replace(/\s+/g, '');
+    document.getElementById("upm2_mcc").value = par[9].replace(/\s+/g, '');
+    document.getElementById("upm2_mcc_debit_value").value = par[10].replace(/\s+/g, '');
+    document.getElementById("upm2_mcc_credit_value").value = par[11].replace(/\s+/g, '');
+    document.getElementById("upm2_mcc_prepaid_value").value = par[12].replace(/\s+/g, '');
+    document.getElementById("upm2_bin").value = par[13].replace(/\s+/g, '');
+    document.getElementById("upm2_bin_value").value = par[14].replace(/\s+/g, '');
+    document.getElementById("upm2_d_value").value = par[15].replace(/\s+/g, '');
+    document.getElementById("upm2_i_value").value = par[16].replace(/\s+/g, '');
+    document.getElementById("upm2_rubro").value = par[17].replace(/\s+/g, '');
+    document.getElementById("upm2_rubro_debit_value").value = par[18].replace(/\s+/g, '');
+    document.getElementById("upm2_rubro_credit_value").value = par[19].replace(/\s+/g, '');
+    document.getElementById("upm2_rubro_prepaid_value").value = par[20].replace(/\s+/g, '');
+    document.getElementById("upm2_region").value = par[21].replace(/\s+/g, '');
+    document.getElementById("upm2_region_debit_value").value = par[22].replace(/\s+/g, '');
+    document.getElementById("upm2_region_credit_value").value = par[23].replace(/\s+/g, '');
+    document.getElementById("upm2_region_prepaid_value").value = par[24].replace(/\s+/g, '');
+    // Hidden Input Values Settings
+    document.getElementById("upm2_channel_H").value = par[2].replace(/\s+/g, '');
+    document.getElementById("upm2_message_type_H").value = par[3].replace(/\s+/g, '');
+    document.getElementById("upm2_processing_code_H").value = par[4].replace(/\s+/g, '');
+    document.getElementById("upm2_response_code_H").value = par[5].replace(/\s+/g, '');
+    document.getElementById("upm2_debit_value_H").value = par[6].replace(/\s+/g, '');
+    document.getElementById("upm2_credit_value_H").value = par[7].replace(/\s+/g, '');
+    document.getElementById("upm2_prepaid_value_H").value = par[8].replace(/\s+/g, '');
+    document.getElementById("upm2_mcc_H").value = par[9].replace(/\s+/g, '');
+    document.getElementById("upm2_mcc_debit_value_H").value = par[10].replace(/\s+/g, '');
+    document.getElementById("upm2_mcc_credit_value_H").value = par[11].replace(/\s+/g, '');
+    document.getElementById("upm2_mcc_prepaid_value_H").value = par[12].replace(/\s+/g, '');
+    document.getElementById("upm2_bin_H").value = par[13].replace(/\s+/g, '');
+    document.getElementById("upm2_bin_value_H").value = par[14].replace(/\s+/g, '');
+    document.getElementById("upm2_d_value_H").value = par[15].replace(/\s+/g, '');
+    document.getElementById("upm2_i_value_H").value = par[16].replace(/\s+/g, '');
+    document.getElementById("upm2_rubro_H").value = par[17].replace(/\s+/g, '');
+    document.getElementById("upm2_rubro_debit_value_H").value = par[18].replace(/\s+/g, '');
+    document.getElementById("upm2_rubro_credit_value_H").value = par[19].replace(/\s+/g, '');
+    document.getElementById("upm2_rubro_prepaid_value_H").value = par[20].replace(/\s+/g, '');
+    document.getElementById("upm2_region_H").value = par[21].replace(/\s+/g, '');
+    document.getElementById("upm2_region_debit_value_H").value = par[22].replace(/\s+/g, '');
+    document.getElementById("upm2_region_credit_value_H").value = par[23].replace(/\s+/g, '');
+    document.getElementById("upm2_region_prepaid_value_H").value = par[24].replace(/\s+/g, '');
+
+    $('#myModal2').modal('show');
+
+  }
+
+  // SHOW ON CLICK
+  $("#insert").click(function () {
+    $('#myModal1').modal('show');
+  });
+
+</script>
+{% endblock %}

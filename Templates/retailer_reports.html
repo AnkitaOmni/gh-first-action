@@ -1,0 +1,7 @@
+{% for key, item in header.items() %}{{item}}{% endfor %}{{'\r\n'}}
+{%- for dict_item in records -%}
+{% for key, value in dict_item.items() -%}
+{{value}}
+{%- endfor %}{{'\r'}}
+{% endfor -%}
+{% for key, item in tailer.items() %}{{item}}{% endfor %}{{'\r\n'}}

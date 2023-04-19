@@ -1,0 +1,96 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+
+            <div class="box-header with-border">
+                <h3 class="box-title">Reports Download</h3>
+            </div>
+
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <form class="form-inline" method="post" action="" name="search">
+                            <div class="form-group">
+                                <div class="col-md-2">
+                                    <label>Report type:</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <select name="result_type" class="form-control input-sm">
+                                        <option value="01">Retailer</option>
+                                        <option value="02">Adjustment</option>
+                                        <option value="03">Conciliation</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-1">
+                                    <label>Date:</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control input-sm" type="date" id="date_" name="select_date"
+                                        value="<?= date('Y-m-d', time()); ?>">
+                                </div>
+
+
+                                <div class="col-md-1">
+                                    <input class="btn btn-info btn-sm" name="download" type="submit"
+                                        value="Submit"></input>
+                                </div>
+
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="table-responsive no-padding">
+                            <form action="" method="POST">
+                                <table id="example1" class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Date</th>
+                                            <th>Download</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        {% for dict_item in result %}
+
+                                        <tr>
+                                            <td>{{dict_item['file_name']}}</td>
+                                            <td>{{dict_item.file_date}}</td>
+                                            <td>
+                                                <a href="{{ url_for('download_file' ,file_path=dict_item.absolute_file_name|string) }}"
+                                                    class="btn btn-info">Download</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page script -->
+<script>
+    $(function () {
+        $('#example1').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": false,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false
+        });
+    });
+</script>
+
+{% endblock %}

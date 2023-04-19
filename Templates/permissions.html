@@ -1,0 +1,86 @@
+<!-- Bootstrap 3.3.5 -->
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='omni/style.css') }}">
+<!-- Theme style -->
+<link rel="stylesheet" href="{{ url_for('static', filename='dist/css/AdminLTE.min.css') }}">
+
+<div class="content-wrapper" style="min-height: 1200px;margin-left: 0px;">
+	<section class="content-header">
+		<h1>
+			<center>OmniCompensator</center>
+		</h1>
+	</section>
+	<section class="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box box-primary">
+
+					<div class="box-header with-border">
+						<h3 class="box-title">Permissions</h3>
+					</div>
+
+					<div class="box-body">
+						<div class="row">
+							<div class="col-xs-12">
+								<!--div class="pull-right">
+					  <form class="form-inline" method="POST" name="search">
+						<div class="form-group">
+
+						  <input class=" input-sm" type="text" name="key1" placeholder="Search Retailer ID">
+											<button id="search" name="search" type="submit" class="btn btn-info btn-sm"><i class="fa fa-search"></i></button>
+						  <button id="insert" name="insert" type="button" class="btn btn-success btn-sm">Add</button>
+
+						</div>
+					  </form>
+					</div-->
+							</div>
+
+							<div class="col-xs-12">
+
+								<div class="table-responsive">
+									{% if permissions %}
+									<table id="datatable" class="table table-bordered">
+										<thead>
+											<tr>
+												<th>Screen Name</th>
+												<th>Grant</th>
+												<!--th>Write</th>
+								<th>Create</th>
+								<th>Delete</th-->
+												<th>Action</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for url, perm in permissions.items() | sort(attribute='0') %}
+											<tr>
+												<form id="{{e}}" name="{{e}}" class="" method="post"
+													action="{{url_for('permissions')}}">
+													<input type="hidden" value="{{user}}" name="user" id="{{user}}">
+
+													<td><label id="screen">{{url}}</label></td>
+													<td><input {% if "r" in perm %} checked {% endif %} class=""
+															type="checkbox" id="{{e}}-read" name="read"></td>
+													<!--td><input {% if "w" in perm %} checked {% endif %} class="" type="checkbox" id="{{e}}-write" name="write"></td>
+								  <td><input {% if "c" in perm %} checked {% endif %} class="" type="checkbox" id="{{e}}-create" name="create"></td>
+								  <td><input {% if "d" in perm %} checked {% endif %} class="" type="checkbox" id="{{e}}-delete" name="delete"></td-->
+													<td><input id="{{url}}" name="{{url}}" value="Update" type="submit"
+															class="btn btn-warning"></input></td>
+
+												</form>
+											</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+									{% endif %}
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+</div>

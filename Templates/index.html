@@ -1,0 +1,248 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<style>
+	.table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.table td,
+	.table th {
+		padding: 12px 15px;
+		border: 1px solid #ddd;
+		text-align: center;
+		font-size: 16px;
+	}
+
+	.table th {
+		background-color: #92c9e6;
+		color: #ffffff;
+	}
+
+	.table tbody tr:nth-child(even) {
+		background-color: #d1e8f5;
+	}
+
+	/*responsive*/
+
+	@media (max-width: 500px) {
+		.table thead {
+			display: none;
+		}
+
+		.table,
+		.table tbody,
+		.table tr,
+		.table td {
+			display: block;
+			width: 100%;
+		}
+
+		.table tr {
+			margin-bottom: 15px;
+		}
+
+		.table td {
+			padding-left: 50%;
+			text-align: left;
+			position: relative;
+		}
+
+		.table td::before {
+			content: attr(data-label);
+			position: absolute;
+			left: 0;
+			width: 50%;
+			padding-left: 15px;
+			font-size: 15px;
+			font-weight: bold;
+			text-align: left;
+		}
+
+		p {
+			text-align: center;
+			font-size: 60px;
+			margin-top: 0px;
+		}
+
+
+		div {
+			text-align: center;
+			font-size: 2em;
+			width: 300px;
+			margin: 10px auto;
+		}
+
+		div .separator {
+			width: 5%
+		}
+
+		.time {
+			width: 30%;
+			display: inline;
+		}
+	}
+</style>
+
+
+<div class="col-lg-12">
+
+
+	<div class="col-lg-3" style="margin-right:-20px;margin-left: -20px;white-space: nowrap;">
+		<table class="table">
+			<thead>
+				<th>Name</th>
+				<th>Count</th>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Retailer Load</td>
+					<td>{{retailerCount}}</td>
+				</tr>
+				<tr>
+					<td>Invalid Trnx</td>
+					<td>{{invalidApprovedCount}}</td>
+				</tr>
+				<tr>
+					<td>Acquirer Node</td>
+					<td>{{iseRetCnt}}</td>
+				</tr>
+				<tr>
+					<td>Issuer Node</td>
+					<td>{{issExtCpCnt}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="col-lg-4" style="margin-right: -25px;white-space: nowrap;">
+		<table class="table">
+			<thead>
+				<th>Brand</th>
+				<th>AppCnt</th>
+				<th>DecCnt</th>
+			</thead>
+			<tbody>
+				{% if brandCnt|length > 0 %}
+				{% for bc in brandCnt %}
+				<tr>
+					{% if bc[0] == "8051" %}
+					<td data-label="Brand">Visa ({{bc[0]}})</td>
+					{% elif bc[0] == "2001" %}
+					<td data-label="Brand">MasterCard ({{bc[0]}})</td>
+					{% elif bc[0] == "2002" %}
+					<td data-label="Brand">Maestro ({{bc[0]}})</td>
+					{% endif %}
+					<td data-label="AppCnt">{{bc[1]}}</td>
+					<td data-label="DecCnt">{{bc[2]}}</td>
+				</tr>
+				{% endfor %}
+				{% else %}
+				<tr>
+					<td data-label="Brand">Visa (8051)</td>
+					<td data-label="AppCnt">0</td>
+					<td data-label="DecCnt">0</td>
+				</tr>
+				<tr>
+					<td data-label="Brand">MasterCard (2001)</td>
+					<td data-label="AppCnt">0</td>
+					<td data-label="DecCnt">0</td>
+				</tr>
+				<tr>
+					<td data-label="Brand">Maestro (2002)</td>
+					<td data-label="AppCnt">0</td>
+					<td data-label="DecCnt">0</td>
+				</tr>
+				<tr>
+					<td data-label="Brand">Total</td>
+					<td data-label="AppCnt">0</td>
+					<td data-label="DecCnt">0</td>
+				</tr>
+				{% endif %}
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="col-lg-4 " style="margin-right:-25px;white-space: nowrap;">
+		<table class="table">
+			<thead>
+				<th>Switch</th>
+				<th>AppCnt</th>
+				<th>DecCnt</th>
+			</thead>
+			<tbody>
+				{% if switchCnt|length > 0 %}
+				{% for sc in switchCnt %}
+				<tr>
+					{% if sc[0] == "0012" %}
+					<td data-label="Switch">GPGMVP ({{sc[0]}})</td>
+					{% elif sc[0] == "2003" %}
+					<td data-label="Switch">DA ({{sc[0]}})</td>
+					{% elif sc[0] == "0014" %}
+					<td data-label="Switch">ALVI ({{sc[0]}})</td>
+					{% endif %}
+					<td data-label="AppCnt">{{sc[1]}}</td>
+					<td data-label="DecCnt">{{sc[2]}}</td>
+				</tr>
+				{% endfor %}
+				{% else %}
+				<tr>
+					<td data-label="Switch">GPGMVP (0012)</td>
+					<td data-label="AppCnt">0</td>
+					<td data-label="DecCnt">0</td>
+				</tr>
+				<tr>
+					<td data-label="Switch">DA (2003)</td>
+					<td data-label="AppCnt">0</td>
+					<td data-label="DecCnt">0</td>
+				</tr>
+				<tr>
+					<td data-label="Switch">ALVI (0014)</td>
+					<td data-label="AppCnt">0</td>
+					<td data-label="DecCnt">0</td>
+				</tr>
+				<tr>
+					<td data-label="Switch">Total</td>
+					<td data-label="AppCnt">0</td>
+					<td data-label="DecCnt">0</td>
+				</tr>
+				{% endif %}
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="col-lg-2" style="margin-right:-25px;white-space: nowrap;">
+		<table class="table">
+			<thead>
+				<th>Job</th>
+				<th>Timer</th>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Loader</td>
+					<td>{{retailerLoadTime}}</td>
+				</tr>
+				<tr>
+					<td>Phase 1</td>
+					<td>{{phaseOneTime}}</td>
+				</tr>
+				<tr>
+					<td>Phase 2</td>
+					<td>{{phaseTwoTime}}</td>
+				</tr>
+				<tr>
+					<td>Total</td>
+					<td>00:00:00</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,152 @@
+<style>
+	ul.checkout-bar li {
+		width: 20.5%;
+	}
+
+	ul.checkout-bar {
+		width: 90%;
+	}
+</style>
+
+<form id='ingresos' action="{{ url_for('institution') }}" method="post">
+	<div class="modal-body">
+
+
+
+		<div class="form-group">
+			<label>Institution ID Type</label>
+			<select name="institution_id_type_desc" id="institution_id_type_desc" class="form-control">
+				{% for type in institution_id_type %}
+				<option value="{{type.description}}">
+					{{type.code}}-{{type.description}}</option>
+				{% endfor %}
+			</select>
+		</div>
+
+		<div class="form-group">
+			<label>Institution ID</label>
+			<select name="institution_id_desc" id="institution_id_desc" class="form-control">
+				{% for type in institution_id %}
+				<option value="{{type.description}}">
+					{{type.code}}-{{type.description}} </option>
+				{% endfor %}
+			</select>
+		</div>
+
+		<div class="form-group">
+			<label>FIID</label>
+			<select name="fiid" id="fiid" class="form-control">
+				{% for type in fiid %}
+				<option value="{{type.description}}">
+					{{type.description}} </option>
+				{% endfor %}
+			</select>
+		</div>
+
+		<div class="form-group">
+			<label>Assigned Agreeement Code</label>
+			<input type="text" name="aac" id="aac" class="form-control" maxlength="10">
+		</div>
+
+		<div class="form-group">
+			<label>Name Officer</label>
+			<input type="text" name="name_officer" id="name_officer" class="form-control" maxlength="20">
+		</div>
+
+		<div class="form-group">
+			<label>Tax ID</label>
+			<input type="text" name="tax_id" id="tax_id" class="form-control" maxlength="10"
+				pattern="\d{8}-[a-zA-Z0-9]|\d{8}" placeholder="12345678-K">
+		</div>
+
+		<div class="form-group">
+			<label>Bank Account Number</label>
+			<input type="text" name="bank_account_number" id="bank_account_number" class="form-control" maxlength="17">
+		</div>
+
+		<div class="form-group">
+			<label>Movement Type</label>
+			<input type="text" name="movment_type" id="movment_type" class="form-control" maxlength="2">
+		</div>
+
+		<div class="form-group">
+			<label>Bank Code</label>
+			<input type="text" name="bank_code" id="bank_code" class="form-control" maxlength="3">
+		</div>
+
+		<div class="form-group">
+			<label>Channel Name</label>
+			<input type="text" name="channel_name" id="channel_name" class="form-control" maxlength="20">
+		</div>
+
+		<div class="form-group">
+			<label>Channel Type</label>
+			<select name="channel_type" id="channel_type" class="form-control">
+				<option value="1">PSP</option>
+				<option value="0">NON-PSP</option>
+			</select>
+		</div>
+
+	</div>
+
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+		<button type="submit" class="btn btn-primary btn-sm" id='create' name='create'>Save changes</button>
+	</div>
+</form>
+
+<script>
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		var href = $(e.target).attr('href');
+
+		var $carr = $(".nav-tabs  a[href='" + href + "']").parent();
+		var $curr = $(".checkout-bar  a[href='" + href + "']").parent();
+		$('.checkout-bar li').removeClass();
+		$('.nav-tabs li').removeClass();
+		$carr.addClass("active");
+		$curr.addClass("active");
+		$curr.prevAll().addClass("visited");
+	});
+</script>
+
+
+<script charset="utf-8" type="text/javascript">
+	$(function () {
+		var dropdown = {
+			customer: $('#institution_id_type_desc'),
+			goodsrec: $('#institution_id_desc')
+		};
+
+		// function to call XHR and update goodsrec dropdown
+		function updateGoodsrec() {
+			var customer = dropdown.customer.val();
+			dropdown.goodsrec.attr('disabled', 'disabled');
+			console.log(customer);
+
+			if (customer.length) {
+				dropdown.goodsrec.empty();
+				$.getJSON("{{ url_for('_get_instituion_id') }}", {
+					type: customer
+				}, function (data) {
+					console.log(data);
+					data.forEach(function (item) {
+						dropdown.goodsrec.append(
+							$('<option>', {
+
+								text: item.code + "-" + item.description,
+								value: item.description
+							})
+						);
+					});
+					dropdown.goodsrec.removeAttr('disabled');
+				});
+			}
+		}
+
+		// event listener to customer dropdown change
+		dropdown.customer.on('change', function () {
+			updateGoodsrec();
+		});
+
+	});
+</script>

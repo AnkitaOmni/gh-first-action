@@ -1,0 +1,422 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<style>
+  div.dataTables_filter {
+    text-align: right;
+    display: none;
+  }
+</style>
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="box box-primary">
+
+      <div class="box-header with-border">
+        <h3 class="box-title">Commission Slab Range Configuration</h3>
+      </div>
+
+      <div class="box-body">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="pull-right">
+              <form class="form-inline" method="POST" name="search">
+                <div class="form-group">
+
+                  <input class="form-control input-sm" type="text" name="key1" placeholder="Search Retailer ID">
+                  <button id="search" name="search" type="submit" class="btn btn-info btn-sm"><i
+                      class="fa fa-search"></i></button>
+                  <button id="insert" name="insert" type="button" class="btn btn-success btn-sm">Add</button>
+
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-xs-12">
+            <div class="table-responsive no-padding">
+              <table id="example1" class="table table-bordered table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Institution ID</th>
+                    <th>Retailer ID</th>
+                    <th>Commission Sub-Type</th>
+                    <th>Low Range</th>
+                    <th>High Range</th>
+                    <th>Value</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for k in data %}
+                  <tr>
+                    <td>{{k.institution_id}}</td>
+                    <td>{{k.retailer_id}}</td>
+                    <td>{{k.commision_subtype}}</td>
+                    <td>{{k.low_range}}</td>
+                    <td>{{k.high_range}}</td>
+                    <td>{{k.value}}</td>
+                    <td align="right" width="10%">
+                      <button
+                        value="{{k.institution_id}},{{k.retailer_id}},{{k.commision_subtype}},{{k.low_range}},{{k.high_range}},{{k.value}}"
+                        class="btn btn-warning btn-sm" onclick="UR(this.value)"><i class="fa fa-edit"></i></button>
+                      <button
+                        value="{{k.institution_id}},{{k.retailer_id}},{{k.commision_subtype}},{{k.low_range}},{{k.high_range}},{{k.value}}"
+                        class="btn btn-danger btn-sm" onclick="DR(this.value)"><i class="fa fa-trash"></i></button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- FORM STARTS ingresos -->
+    <form method="POST">
+      <!-- Modal1 -->
+      <div id="myModal1" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Add Commission Slab Range</h4>
+            </div>
+            <!--form action ="" method = "Post"-->
+            <div class="modal-body">
+
+              Instituiton ID:<br>
+              <select id="inst_id" name="inst_id" class="form-control input-sm pull-right" onchange="get_ret_id()"
+                required>
+                <option value=DEFAULT>DEFAULT</option>
+                {% for i_id in IID %}
+                <option value={{i_id.institution_id_code}}>{{i_id.institution_id_code}}</option>
+                {% endfor %}
+              </select>
+
+              Retailer ID:<br>
+              <select id="retailer_id" name="retailer_id" class="form-control input-sm pull-right" required>
+                <option value=DEFAULT>DEFAULT</option>
+              </select>
+
+              Commission Sub-Type:<br>
+              <select id="com_sub_type" name="com_sub_type" class="form-control input-sm pull-right" required>
+                {% for i2 in C_S_T %}
+                {% set x = i2.description %}
+                {% if (x != "Plain") %}
+                <option value={{i2.code}}>{{x}}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+
+              Low Range:<br>
+              <input type="number" name="LR" id="LR" placeholder="Low Range" title="Low Range"
+                class="form-control input-sm pull-right" min="0" oninput="validity.valid||(value='');">
+
+              High Range:<br>
+              <input type="number" name="HR" id="HR" placeholder="High Range" title="High Range"
+                class="form-control input-sm pull-right" onchange="Check_Low_Range()" min="0"
+                oninput="validity.valid||(value='');">
+
+              Value:<br>
+              <input type="number" name="val" id="val" placeholder="0.00" step="any" pattern="[0-9]+(\.[0-9]{1,2})?%?"
+                title="Value" class="form-control input-sm pull-right">
+
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-primary " id="Create_OK">OK</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+    <form class="">
+      <!-- Modal2 -->
+      <div id="myModal2" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal2 content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Update Commission Salb Range</h4>
+            </div>
+
+            <div class="modal-body">
+
+              Instituiton ID:<br>
+              <input type="text" id="upm2_iid_par" name="upm2_iid_par" class="form-control input-sm pull-right"
+                readonly>
+
+              Retailer ID:<br>
+              <input type="text" id="upm2_rid_par" name="upm2_iid_par" class="form-control input-sm pull-right"
+                readonly>
+
+              Commission Sub-Type:<br>
+              <select id="upm2_com_st" name="upm2_com_st" class="form-control input-sm pull-right" required>
+                {% for i2 in C_S_T %}
+                {% set x = i2.description %}
+                {% if (x != "Plain") %}
+                <option value={{i2.code}}>{{x}}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+
+              Low Range:<br>
+              <input type="number" name="upm2_LR" id="upm2_LR" placeholder="Low Range" title="Low Range"
+                class="form-control input-sm pull-right" min="0" oninput="validity.valid||(value='');">
+
+              High Range:<br>
+              <input type="number" name="upm2_HR" id="upm2_HR" placeholder="High Range" title="High Range"
+                class="form-control input-sm pull-right" min="0" oninput="validity.valid||(value='');">
+
+              Value:<br>
+              <input type="number" name="upm2_val" id="upm2_val" placeholder="0.00" step="any"
+                pattern="[0-9]+(\.[0-9]{1,2})?%?" title="Value" class="form-control input-sm pull-right">
+
+              <input type="hidden" name="cst" id="cst">
+              <input type="hidden" name="lr_h" id="lr_h">
+              <input type="hidden" name="hr_h" id="hr_h">
+              <input type="hidden" name="val_h" id="val_h">
+
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-primary " id="Update_OK">OK</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+
+  </div>
+</div>
+
+
+
+<!-- page script -->
+<script>
+
+  // Function for paging, searching, autoWidth etc ...
+  $(function () {
+  var data;
+  $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+  var table = $('#example1').DataTable({
+    "paging": true,
+    "lengthChange": false,
+    "searching": true,
+    "ordering": true,
+    "info": true,
+    "autoWidth": false
+  });
+  });;
+
+  // Redirect Function
+  function RD_URL() {
+    window.location.replace($SCRIPT_ROOT + "/commission_slab_range");
+  }
+
+
+  // To Populate Dropdown Add Button
+  function get_ret_id() {
+    var inst_id = document.getElementById("inst_id").value;
+    // alert('Inst ID = ' + inst_id);
+
+    // AJAX CALLL DEPLOYED
+    $.get($SCRIPT_ROOT + '/get_rc_ret_id',
+      {
+        Instituiton_ID: inst_id
+      },
+      function (data, status) {
+        // alert(data);
+        $('#retailer_id').find('option').not(':first').remove();
+        $.each(data, function (index, value) {
+          // alert( index + ": " + value );
+          $('#retailer_id').append('<option value="' + value + '">' + value + '</option>');
+        });
+        // alert(status);
+      });
+  }
+
+  // To Populate Dropdown Update Button
+  function get_ret_id1() {
+    var iid_par = document.getElementById("iid_par").value;
+    // alert('Inst ID = ' + inst_id);
+
+    // AJAX CALLL DEPLOYED
+    $.get($SCRIPT_ROOT + '/get_rc_ret_id',
+      {
+        Instituiton_ID: iid_par
+      },
+      function (data, status) {
+        // alert(data);
+        $('#rid_par').find('option').not(':first').remove();
+        $.each(data, function (index, value) {
+          // alert( index + ": " + value );
+          $('#rid_par').append('<option value="' + value + '">' + value + '</option>');
+        });
+        // alert(status);
+      });
+  }
+
+  // To Delete
+  function DR(TERM) {
+    var params;
+    var retVal = confirm("Do you want to continue ?");
+    if (retVal == true) {
+      params = TERM.toString().split(',');
+      // alert(params);
+      $.post($SCRIPT_ROOT + '/commission_slab_range',
+        {
+          delete: "delete",
+          institution_id: params[0],
+          retailer_id: params[1],
+          cst: params[2],
+          lr: params[3],
+          hr: params[4],
+          val: params[5]
+        },
+        function (data, status) {
+          RD_URL();
+        });
+    }
+  }
+
+
+  // To update and show the modal2
+  function UR(TERM) {
+    var par;
+    par = TERM.toString().split(',');
+    // alert(" \nPar Value 0 = " + par[0] + " \nPar Value 1 = " + par[1]+ " \nPar Value 2 = " + par[2]+ " \nPar Value 3 = " + par[3]+ " \nPar Value 4 = " + par[4]+ " \nPar Value 5 = " + par[5]);
+    document.getElementById("upm2_iid_par").value = par[0].replace(/\s+/g, '');
+    document.getElementById("upm2_rid_par").value = par[1].replace(/\s+/g, '');
+    document.getElementById("upm2_LR").value = par[3].replace(/\s+/g, '');
+    document.getElementById("upm2_HR").value = par[4].replace(/\s+/g, '');
+    document.getElementById("upm2_val").value = par[5].replace(/\s+/g, '');
+
+    document.getElementById("cst").value = par[2].replace(/\s+/g, '');
+    document.getElementById("lr_h").value = par[3].replace(/\s+/g, '');
+    document.getElementById("hr_h").value = par[4].replace(/\s+/g, '');
+    document.getElementById("val_h").value = par[5].replace(/\s+/g, '');
+
+    for (var option of document.getElementById("upm2_com_st").options) {
+      if (option.value === par[2].replace(/\s+/g, '')) {
+        option.selected = true;
+      }
+    }
+    // To Show The Update Form
+    $('#myModal2').modal('show');
+  }
+
+
+  // Update_Record_Function = Modal2
+  // AJAX Call
+  $("#Update_OK").click(function (e) {
+    e.preventDefault();
+    var iid, rid, com_st, lr, hr, val, cst, lr_h, hr_h, val;
+
+    l_r = parseInt(document.getElementById("upm2_LR").value);
+    h_r = parseInt(document.getElementById("upm2_HR").value);
+
+    if (l_r > h_r || l_r === h_r) {
+      alert("Low Range Must Never Exceed High Range ...!!");
+      // RD_URL();
+      return false;
+    }
+
+    var retVal = confirm("Do you want to continue ?");
+    if (retVal == true) {
+      iid = document.getElementById("upm2_iid_par").value;
+      rid = document.getElementById("upm2_rid_par").value;
+      com_st = document.getElementById("upm2_com_st").value;
+      lr = document.getElementById("upm2_LR").value;
+      hr = document.getElementById("upm2_HR").value;
+      val = document.getElementById("upm2_val").value;
+
+      cst = document.getElementById("cst").value;
+      lr_h = document.getElementById("lr_h").value;
+      hr_h = document.getElementById("hr_h").value;
+      val_h = document.getElementById("val_h").value;
+
+      // alert("Values = " + iid + " " + rid + " " + com_st + " " + lr + " " + hr + " " + val + " " + cst + " " + lr_h + " " + hr_h + " " + val_h);
+      $.post($SCRIPT_ROOT + '/commission_slab_range',
+        {
+          update: "update",
+          inst_id: iid,
+          retailer_id: rid,
+          com_sub_type: com_st,
+          lr: lr,
+          hr: hr,
+          val: val,
+          cst: cst,
+          lr_h: lr_h,
+          hr_h: hr_h,
+          val_h: val_h
+        },
+        function (data, status) {
+          RD_URL();
+        });
+    }
+
+  });
+
+
+  // Create_Record_Function = Modal2
+  // AJAX Call
+  $("#Create_OK").click(function (e) {
+    e.preventDefault();
+    var iid, rid, com_st, lr, hr, val, cst, lr_h, hr_h, val;
+
+    l_r = parseInt(document.getElementById("LR").value);
+    h_r = parseInt(document.getElementById("HR").value);
+
+    if (l_r > h_r || l_r === h_r) {
+      alert("Low Range Must Never Exceed High Range ...!!");
+      document.getElementById("LR").value = "";
+      document.getElementById("HR").value = "";
+      return false;
+    }
+
+    iid = document.getElementById("inst_id").value;
+    rid = document.getElementById("retailer_id").value;
+    com_st = document.getElementById("com_sub_type").value;
+    lr = document.getElementById("LR").value;
+    hr = document.getElementById("HR").value;
+    val = document.getElementById("val").value;
+
+    // alert("Values = " + iid + " " + rid + " " + com_st + " " + lr + " " + hr + " " + val);
+    $.post($SCRIPT_ROOT + '/commission_slab_range',
+      {
+        create: "create",
+        inst_id: iid,
+        retailer_id: rid,
+        com_sub_type: com_st,
+        lr: lr,
+        hr: hr,
+        val: val
+      },
+      function (data, status) {
+        RD_URL();
+      });
+  });
+
+
+  $("#insert").click(function () {
+    $('#myModal1').modal('show');
+  });
+
+</script>
+{% endblock %}

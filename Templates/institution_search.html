@@ -1,0 +1,196 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+
+<!-- Here comes the current users-->
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+
+            <div class="box-header with-border">
+                <h3 class="box-title">Institution Configuration</h3>
+            </div>
+
+            {% if result %}
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="pull-right">
+                            <form class="form-inline" method="POST" action="" name="search">
+                                <div class="form-group">
+                                    <input class="form-control input-sm" type="text" name="key"
+                                        placeholder="institution type code here">
+                                    <input class="form-control input-sm" type="text" name="key1"
+                                        placeholder="institution id here">
+                                    <button id="search" name="search" type="submit" class="btn btn-info btn-sm"><i
+                                            class="fa fa-search"></i></button>
+                                    <button id="insert" type="button" class="btn btn-success btn-sm"><i
+                                            class="fa fa-plus"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="table-responsive no-padding">
+                            <table id="example1" class="table table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th> Institution Type </th>
+                                        <th> Institution ID </th>
+                                        <th> FIID </th>
+                                        <!-- <th> Assigned Agreeement Code </th>
+                                        <th> Tax ID </th>
+                                        <th> Bank Account Number </th>
+                                        <th> Movment Type </th>
+                                        <th> Bank Code </th> -->
+                                        <th> Channel Name </th>
+                                        <th> </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in result%}
+                                    <tr>
+                                        <td> {{ item.institution_id_type_code }}-{{ item.institution_id_type_desc }}
+                                        </td>
+                                        <td> {{ item.institution_id_code }}-{{ item.institution_id_desc }} </td>
+                                        <td> {{ item.fiid }} </td>
+                                        <!-- <td> {{ item.assigned_agreeement_code }} </td>
+                                        <td> {{ item.tax_id }} </td>
+                                        <td> {{ item.bank_account_number }} </td>
+                                        <td> {{ item.movment_type  }} </td>
+                                        <td> {{ item.bank_code }} </td> -->
+                                        <td> {{ item.channel_name }} </td>
+                                        <td align="right">
+                                            <button
+                                                value="{{ item.institution_id_type_code }},{{ item.institution_id_type_desc }},{{ item.institution_id_code }},{{ item.institution_id_desc }},{{ item.fiid }},{{ item.assigned_agreeement_code }},{{ item.name_officer }},{{ item.tax_id }},{{ item.bank_account_number }},{{ item.movment_type }},{{ item.bank_code }},{{ item.channel_name }},{{ item.channel_type }}"
+                                                class="btn btn-warning btn-sm" onclick="UR(this.value)">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button
+                                                value="{{ item.institution_id_type_code }},{{ item.institution_id_code }},{{ item.channel_name }}"
+                                                class="btn btn-danger btn-sm" onclick="deleteRecord(this.value)">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+
+        <!-- MODAL1 -->
+        <div class="active tab-pane" id="activity">
+            <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Add Institution</h4>
+                        </div>
+
+                        {% include "institution_modal.html" %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL2 -->
+        <div class="active tab-pane" id="activity">
+            <div id="myModal2" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Update Institution</h4>
+                        </div>
+
+                        {% include "institution_modal2.html" %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+</div>
+
+
+<script>
+    var table;
+    $(function () {
+
+        $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+    var data_t;
+    table = $('#example1').DataTable({
+        "paging": false,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false
+    });
+    });
+
+
+    function UR(IDS) {
+        var params = IDS.toString().split(',');
+        // window.console.log(params);
+        updateRecord(params);
+    }
+
+
+    function deleteRecord(IDS) {
+        var params;
+        var retVal = confirm("Do you want to continue ?");
+        if (retVal == true) {
+            params = IDS.toString().split(',');
+            $.post($SCRIPT_ROOT + '/institution', {
+                delete: "delete",
+                TypeCode: params[0],
+                TypeId: params[1],
+				ChannelName: params[2]
+            },
+                function (data, status) {
+                    table
+                        .clear()
+                        .draw();
+                });
+            return true;
+        }
+    }
+
+
+    $("#insert").click(function () {
+
+        $('#myModal').modal('show');
+        $('#ingresos').trigger("reset");
+
+        var inputs = document.getElementsByTagName('input');
+        for (i = 0; i < inputs.length; i++) {
+            inputs[i].disabled = false;
+        }
+
+        var selects = document.getElementsByTagName("select");
+        for (var i = 0; i < selects.length; i++) {
+            selects[i].disabled = false;
+        }
+        //document.getElementById("TerminalId").readOnly = false;
+        document.getElementById("create").style.display = "";
+        //document.getElementById("update_s").style.display = "none";
+
+    });
+</script>
+
+{% endblock %}

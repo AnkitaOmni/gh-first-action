@@ -1,0 +1,43 @@
+{% extends "navigator.html" %}
+
+{% block body %}
+<section class="content">
+        <div class="error-page">
+                <h2 class="headline text-yellow"> 404</h2>
+                <div class="error-content">
+                        <h3><i class="fa fa-warning text-yellow"></i> Oops! Page not found.</h3>
+                        <p>
+                                We could not find the page you were looking for.
+                                Meanwhile, you may <a href="/">return to HomePage</a> or try using the
+                                search form.
+                        </p>
+                        <p id="timer"></p>
+                        <form class="search-form">
+                                <div class="input-group">
+                                        <input type="text" name="search" class="form-control" placeholder="Search">
+                                        <div class="input-group-btn">
+                                                <button type="submit" name="submit" class="btn btn-warning btn-flat"><i
+                                                                class="fa fa-search"></i></button>
+                                        </div>
+                                </div><!-- /.input-group -->
+                        </form>
+                </div><!-- /.error-content -->
+        </div><!-- /.error-page -->
+</section><!-- /.content -->
+
+<script language="JavaScript" type="text/javascript">
+        var seconds = 10;// countdown timer. took 10 because page takes approx 1 sec to load 
+        var url = "{{url_for('home')}}";// variable for index.html url 
+
+        function redirect() {
+                if (seconds <= 0) {
+                        window.location = url;// redirect to new url after counter  down. 
+                } else {
+                        seconds--;
+                        document.querySelector("#timer").innerHTML = "Redirecting to Home Page after " + seconds + " seconds.";
+                        setTimeout("redirect()", 1000);
+                }
+        }
+        redirect();
+</script>
+{% endblock %}

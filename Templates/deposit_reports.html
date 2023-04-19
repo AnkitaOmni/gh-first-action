@@ -1,0 +1,9 @@
+{% for key1, item1 in header.items() %}{{item1}}{% endfor %}{{'\r'}}
+{% for key2, item2 in sub_header.items() %}{{item2}}{% endfor %}{{'\r\n'}}
+{%- for dict_item in records -%}
+{% for key_r, value_r in dict_item.items() -%}
+{{value_r}}
+{%- endfor %}{{'\r'}}
+{% endfor -%}
+{% for key3, item3 in control.items() %}{{item3}}{% endfor %}{{'\r'}}
+{% for key4, item4 in trailer.items() %}{{item4}}{% endfor %}{{'\r\n'}}

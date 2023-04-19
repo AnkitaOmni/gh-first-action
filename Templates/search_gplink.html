@@ -1,0 +1,315 @@
+{% extends "navigator.html" %}
+{% block body %}
+
+<style>
+	.box-title {
+		font-size: 18px;
+		padding: 0px 12px;
+	}
+</style>
+
+
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box box-primary">
+
+			<!-- * Head -->
+			<div class="box-header with-border">
+				<h3 class="box-title">GPLINK Merchant Filters</h3>&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="radio" id="singleDaySelection" name="singleDaySelection" value="singleDay"
+					onclick="singleDay();">
+				<label for="singleDay">Single Day</label>&nbsp;&nbsp;
+				<input type="radio" id="multipleDaysSelection" name="multipleDaysSelection" value="multipleDays"
+					onclick="multipleDay();">
+				<label for="multipleDays">Multiple Days</label>
+			</div>
+
+			<!-- * Body -->
+			<div class="box-body">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box-header" style="display:flex; align-items: flex-end;">
+
+							<div>
+								<form class="form-inline" method="POST"
+									action="{{ url_for('search_gplink_csv_view') }}" name="singleDaySearchForm"
+									id="singleDaySearchForm" style="display:none">
+									<div class="form-group">
+										<input required placeholder="Date" class="form-control input-sm" type="date"
+											id="key1Name" name="key1" id="datepicker" style="width: 250px;"
+											value="{{searched_date}}">
+										<input placeholder="Retailer ID" class="form-control input-sm" type="text"
+											name="key2" id="key2Name" style="width: 200px;" value="{{retID}}">
+										<button id="searchSingle" name="searchSingle" type="submit"
+											class="btn btn-info btn-sm" value="Search"><i
+												class="fa fa-search"></i></button>
+									</div>
+									{% if searched_date %}
+									<script>
+										document.getElementById('singleDaySelection').checked = true;
+										document.getElementById('multipleDaysSelection').checked = false;
+										let y = document.getElementById("singleDaySearchForm");
+										let z = document.getElementById("multipleDaySearchForm");
+										let zdr = document.getElementById("zdr");
+										let dd = document.getElementById("dd");
+										let td = document.getElementById("td");
+										y.style.display = ''
+										z.style.display = 'none'
+										zdr.style.display = ''
+										dd.style.display = ''
+										td.style.display = ''
+									</script>
+									&nbsp;
+									<a href="/gplink_download/{{searched_date}}" class="btn" id="zdr"><button
+											class="btn btn-info" type="button"><i class="fa fa-download"></i> Zip
+											Deposit Reports</button></a>
+									<a href="/gplink_download_deposit/{{searched_date}}" class="btn" id="dd"><button
+											class="btn btn-info" type="button"><i class="fa fa-download"></i> Deposit
+											Details</button></a>
+									<a href="/search_gplink_csv_download/{{searched_date}}" class="btn"
+										id="td"><button class="btn btn-info" type="button"><i
+												class="fa fa-download"></i> Transaction Details</button></a>
+									{% endif %}
+								</form>
+							</div>
+
+							<div>
+								<form class="form-inline" method="POST"
+									action="{{ url_for('search_gplink_csv_view') }}" name="multipleDaySearchForm"
+									id="multipleDaySearchForm" style="display:none">
+									<div class="form-group">
+										<label for="startDate">Start Date
+											<input required placeholder="Start Date" class="form-control input-sm"
+												type="date" id="startDate" name="startDate" style="width: 250px;"
+												value="{{start_date}}"></label>
+										<label for="endDate">End Date
+											<input required placeholder="End Date" class="form-control input-sm"
+												type="date" id="endDate" name="endDate" style="width: 250px;"
+												value="{{end_date}}" onchange="checkDiff();"></label>
+										<textarea class="form-control input-sm" name="ruth" id="ruth" cols="30" rows="1"
+											placeholder="Ruth                                               
+												Enter Ruth on New Line" title="Enter Ruth on new line"
+											style="width: 208px; height: 81px;">{{ruthData}}</textarea>
+										<button id="searchMulti_DPR" name="searchMulti_DPR" type="submit"
+											class="btn btn-info btn-sm" value="Deposit Details" disabled>Deposit
+											Details</button>
+										<button id="searchMulti_TD" name="searchMulti_TD" type="submit"
+											class="btn btn-info btn-sm" value="Transaction Details" disabled>Transaction
+											Details</button>
+
+										{% if start_date or end_date %}
+										<script>
+											document.getElementById('multipleDaysSelection').checked = true;
+											document.getElementById('singleDaySelection').checked = false;
+											let y = document.getElementById("singleDaySearchForm");
+											let z = document.getElementById("multipleDaySearchForm");
+											let zdr = document.getElementById("zdr");
+											let dd = document.getElementById("dd");
+											let td = document.getElementById("td");
+											y.style.display = 'none'
+											z.style.display = ''
+											zdr.style.display = 'none'
+											dd.style.display = 'none'
+											td.style.display = 'none'
+										</script>
+										{% endif %}
+
+								</form>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="table-responsive no-padding">
+						{% if singleSearch or depositData %}
+						<div id="singleSearch">
+							<br>
+							{% if singleSearch %}
+							<B>Records for Date {{searched_date}}</B>
+							{% endif %}
+							</br>
+
+							<table id="example1"
+								class="table table-hover table-bordered table-striped dataTable no-footer">
+								<thead>
+									<tr>
+										<th>IDP</th>
+										<th>Retailer ID</th>
+										<th>RUT</th>
+										<th>Nombre del comercio</th>
+										<th>Fecha de disponibilidad original</th>
+										<th>Fecha a depositar</th>
+										<th>Cantidad de Ventas</th>
+										<th>Monto Bruto</th>
+										<th>Comision total</th>
+										<th>Monto Neto a Pagar </th>
+										<th>Banco</th>
+										<th>Tipo de cuenta</th>
+										<th>N de cuenta</th>
+										<th>Estado del deposito</th>
+										<th>Fecha del deposito</th>
+										<th>Respuesta Transferencia</th>
+										<th>Email abono</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for row in csv_data%}
+									<tr>
+										<td> <a href="search_gplink_detail?key1={{row[0]}}&key2={{row[4]}}">{{ row[0]
+												}}</a> </td>
+										{% for el in row[1:] %}
+										<td> {{ el }} </td>
+										{% endfor %}
+									</tr>
+									{% endfor %}
+									{% endif %}
+								</tbody>
+							</table>
+						</div>
+
+						{% if trnxData %}
+						<!-- <div><H5><b>IDP :- {{IDP}} &nbsp; | &nbsp; Date :- {{searchDate}}</b></H5></div> -->
+						<table id="example1" class="table table-hover table-bordered table-striped dataTable no-footer">
+							<thead>
+								<tr>
+									{% for colName in tbHead %}
+									<th>{{ colName }}</th>
+									{% endfor %}
+								</tr>
+							</thead>
+
+							<tbody>
+								{% for trnxData in csv_data %}
+								<tr>
+									{% for td in trnxData %}
+									<td> {{ td }} </td>
+									{% endfor %}
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+						{% endif %}
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- page script -->
+<script>
+
+	$(function () {
+		$SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+	checkDiffOnLoad();
+	var table = $('#example1').DataTable({
+		"paging": true,
+		"lengthChange": false,
+		"searching": true,
+		"ordering": true,
+		"info": true,
+		"autoWidth": false,
+		dom: 'Bfrtip',
+		buttons: [
+			{
+				extend: 'csv',
+				text: 'Export CSV',
+				className: 'btn-space',
+				exportOptions: {
+					orthogonal: null
+				}
+			}
+		]
+
+	});
+	});
+
+	function singleDay() {
+		document.getElementById("multipleDaysSelection").checked = false;
+		if (document.getElementById("singleSearch") != null) {
+			document.getElementById("singleSearch").style.display = 'none';
+		}
+		let y = document.getElementById("singleDaySearchForm");
+		let z = document.getElementById("multipleDaySearchForm");
+		let zdr = document.getElementById("zdr");
+		let dd = document.getElementById("dd");
+		let td = document.getElementById("td");
+		// alert("singleDay");
+		// alert("x = "+x.style.display+" | y = "+y.style.display+" | z = "+z.style.display);
+		// x.style.display = 'none'
+		y.style.display = ''
+		z.style.display = 'none'
+		zdr.style.display = ''
+		dd.style.display = ''
+		td.style.display = ''
+	}
+
+	function multipleDay() {
+		document.getElementById("singleDaySelection").checked = false;
+		if (document.getElementById("singleSearch") != null) {
+			document.getElementById("singleSearch").style.display = 'none';
+		}
+		var y = document.getElementById("multipleDaySearchForm");
+		var z = document.getElementById("singleDaySearchForm");
+		let zdr = document.getElementById("zdr");
+		let dd = document.getElementById("dd");
+		let td = document.getElementById("td");
+		// alert("multipleDaySearchForm");
+		// alert("x = "+x.style.display+" | y = "+y.style.display+" | z = "+z.style.display);
+		// x.style.display = 'none'
+		y.style.display = ''
+		z.style.display = 'none'
+		// zdr.style.display = 'none'
+		// dd.style.display = 'none'
+		// td.style.display = 'none'
+	}
+
+	function checkDiff() {
+		let sd = new Date(document.getElementById("startDate").value);
+		let ed = new Date(document.getElementById("endDate").value);
+		let diff = ed.getTime() - sd.getTime();
+		let daydiff = diff / (1000 * 60 * 60 * 24);
+		// alert(sd + " | " + ed + " | " + daydiff)
+		if (isNaN(daydiff)) {
+			alert("Please Select Start/End Date ")
+		}
+		else {
+			if (daydiff >= 10 || daydiff < 0) {
+				alert("Only 10 Days Records Are Allowed");
+				document.getElementById("searchMulti_DPR").disabled = true;
+				document.getElementById("searchMulti_TD").disabled = true;
+			}
+			else {
+				document.getElementById("searchMulti_DPR").disabled = false;
+				document.getElementById("searchMulti_TD").disabled = false;
+			}
+		}
+	}
+
+	function checkDiffOnLoad() {
+		let sd = new Date(document.getElementById("startDate").value);
+		let ed = new Date(document.getElementById("endDate").value);
+		let diff = ed.getTime() - sd.getTime();
+		let daydiff = diff / (1000 * 60 * 60 * 24);
+		// alert(sd + " | " + ed + " | " + daydiff)
+		if (isNaN(daydiff)) {
+		}
+		else {
+			if (daydiff >= 10 || daydiff < 0) {
+				document.getElementById("searchMulti_DPR").disabled = true;
+				document.getElementById("searchMulti_TD").disabled = true;
+			}
+			else {
+				document.getElementById("searchMulti_DPR").disabled = false;
+				document.getElementById("searchMulti_TD").disabled = false;
+			}
+		}
+	}
+</script>
+{% endblock %}

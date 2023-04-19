@@ -1,0 +1,327 @@
+{% extends "navigator.html" %}
+{% block body %}
+<div class="col-md-12">
+  <div class="active tab-pane" id="activity">
+    <!-- Here comes the current users-->
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title"> <b> {{request.args.get('search') |add_space}} Configuration </b></h3>
+            <div class="form-group form-inline">
+              <br>
+
+
+              <input class="form-control" type="text" name="key" id="key" placeholder="type search here">
+              <button id="search" name="search" type="button" class="btn btn-info">Search</button>
+              <button id="insert" type="button" class="btn btn-success">Add</button>
+
+            </div>
+
+            <!-- Modal -->
+            <div id="myModal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add {{request.args.get('search') |add_space}}</h4>
+                  </div>
+                  <form action="{{url_for('catalogs')}}?search={{request.args.get('search')}}" method="Post">
+                    <div class="modal-body">
+                      <select id="catalog_name" name="catalog_name" class="form-control">
+                        {% if request.args.get('search') %}
+                        <option value="{{request.args.get('search')}}">{{request.args.get('search')}}</option>
+                        {% else %}
+
+
+                        <option value="TypeOfRetailers">TypeOfRetailers</option>
+                        <option value="InstitutionIdType">InstitutionIdType</option>
+                        <option value="InstitutionIdCode">InstitutionId</option>
+                        <option value="CardUsageCode"> CardUsageCode </option>
+                        <option value="CardDomainCode"> CardDomainCode </option>
+                        <option value="CardCheckDigitCode">CardCheckDigitCode </option>
+                        <option value="CardBrandType"> CardBrandType </option>
+                        <option value="CardBrandId"> CardBrandId </option>
+                        <option value="CardBrandNameCode"> CardBrandNameCode </option>
+                        <option value="CardAuthTypeCode"> CardAuthTypeCode </option>
+                        <option value="CardStandInCode"> CardStandInCode </option>
+                        <option value="TimeOutCode">TimeOutCode </option>
+                        <option value="CardProcessNameCode"> CardProcessNameCode </option>
+                        <option value="TransactionCode"> TransactionCode </option>
+                        <option value="TokenCode"> TokenData </option>
+                        <option value="TransactionDataDetail"> TransactionDataDetail </option>
+                        <option value="RetailerGroupCode"> RetailerGroupCode </option>
+                        <option value="RetailerMallCode">RetailerMallCode</option>
+                        <option value="IdentificationTypeCode"> IdentificationTypeCode </option>
+                        <option value="RetailerMMCCode"> RetailerMMCCode</option>
+                        <option value="RetalerWorkingHoursCode">RetalerWorkingHoursCode</option>
+                        <option value="RetailerDepositOnLineCode">RetailerDepositOnLineCode</option>
+                        <option value="RetailerPaymentVendorsCode">RetailerPaymentVendorsCode</option>
+                        <option value="RetailerStatusCode">RetailerStatusCode</option>
+                        <option value="RetailerAccountTypeCode">RetailerAccountTypeCode</option>
+                        <option value="Taxes">Taxes</option>
+                        <option value="FIID">FIID</option>
+
+                        {% endif %}
+
+                      </select>
+                      <input type="text" id="code" name="code" class="form-control input-sm pull-right"
+                        placeholder="CODE">
+                      <input type="text" id="description" name="description" class="form-control input-sm pull-right"
+                        placeholder="DESCRIPTION">
+
+                      {% if request.args.get('search') == "InstitutionIdCode" %}
+                      <select id="related" name="related" class="form-control">
+                        {% for inst in InstitutionIdType %}
+                        <option value="{{inst.description}}">{{inst.description}}</option>
+                        {% endfor %}
+                      </select>
+
+
+                      {% endif %}
+                      {% if request.args.get('search') == "CardBrandId" %}
+                      <select id="related" name="related" class="form-control">
+                        {% for inst in CardBrandType %}
+                        <option value="{{inst.description}}">{{inst.description}}</option>
+                        {% endfor %}
+
+                      </select>
+                      {% endif %}
+                      {% if request.args.get('search') == "CardSubrandId" %}
+                      <select id="related" name="related" class="form-control">
+                        {% for inst in CardBrandId %}
+                        <option value="{{inst.description}}">{{inst.description}}</option>
+                        {% endfor %}
+                      </select>
+                      {% endif %}
+
+
+
+                    </div>
+                    <div class="modal-footer">
+                      <button class="btn btn-success " name="create" type="submit">Add</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <!--MODAL 1 -->
+            <div id="myModal1" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Update {{request.args.get('search') |add_space}}</h4>
+                  </div>
+                  <form action="{{url_for('catalogs')}}?search={{request.args.get('search')}}" method="Post">
+                    <div class="modal-body">
+                      <select id="catalog_name1" name="catalog_name1" class="form-control" readonly="readonly">
+                        {% if request.args.get('search') %}
+                        <option value="{{request.args.get('search')}}">{{request.args.get('search')}}</option>
+                        {% else %}
+
+
+                        <option value="TypeOfRetailers">TypeOfRetailers</option>
+                        <option value="InstitutionIdType">InstitutionIdType</option>
+                        <option value="InstitutionId">InstitutionId</option>
+                        <option value="CardUsageCode"> CardUsageCode </option>
+                        <option value="CardDomainCode"> CardDomainCode </option>
+                        <option value="CardCheckDigitCode">CardCheckDigitCode </option>
+                        <option value="CardBrandType"> CardBrandType </option>
+                        <option value="CardBrandId"> CardBrandId </option>
+                        <option value="CardBrandNameCode"> CardBrandNameCode </option>
+                        <option value="CardAuthTypeCode"> CardAuthTypeCode </option>
+                        <option value="CardStandInCode"> CardStandInCode </option>
+                        <option value="TimeOutCode">TimeOutCode </option>
+                        <option value="CardProcessNameCode"> CardProcessNameCode </option>
+                        <option value="TransactionCode"> TransactionCode </option>
+                        <option value="TokenCode"> TokenData </option>
+                        <option value="TransactionDataDetail"> TransactionDataDetail </option>
+                        <option value="RetailerGroupCode"> RetailerGroupCode </option>
+                        <option value="RetailerMallCode">RetailerMallCode</option>
+                        <option value="IdentificationTypeCode"> IdentificationTypeCode </option>
+                        <option value="RetailerMMCCode"> RetailerMMCCode</option>
+                        <option value="RetalerWorkingHoursCode">RetalerWorkingHoursCode</option>
+                        <option value="RetailerDepositOnLineCode">RetailerDepositOnLineCode</option>
+                        <option value="RetailerPaymentVendorsCode">RetailerPaymentVendorsCode</option>
+                        <option value="RetailerStatusCode">RetailerStatusCode</option>
+                        <option value="RetailerAccountTypeCode">RetailerAccountTypeCode</option>
+                        <option value="Taxes">Taxes</option>
+                        <option value="FIID">FIID</option>
+
+                        {% endif %}
+                      </select>
+                      <input type="text" id="code1" name="code1" class="form-control input-sm pull-right"
+                        placeholder="CODE" readonly="readonly">
+                      <input type="text" id="description1" name="description1" class="form-control input-sm pull-right"
+                        placeholder="DESCRIPTION">
+
+
+                      {% if request.args.get('search') == "InstitutionIdCode" %}
+                      <select id="related" name="related" class="form-control">
+                        {% for inst in InstitutionIdType %}
+                        <option value="{{inst.description}}">{{inst.description}}</option>
+                        {% endfor %}
+                      </select>
+
+
+                      {% endif %}
+                      {% if request.args.get('search') == "CardBrandId" %}
+                      <select id="related" name="related" class="form-control">
+                        {% for inst in CardBrandType %}
+                        <option value="{{inst.description}}">{{inst.description}}</option>
+                        {% endfor %}
+
+                      </select>
+                      {% endif %}
+                      {% if request.args.get('search') == "CardSubrandId" %}
+                      <select id="related" name="related" class="form-control">
+                        {% for inst in CardBrandId %}
+                        <option value="{{inst.description}}">{{inst.description}}</option>
+                        {% endfor %}
+                      </select>
+                      {% endif %}
+
+
+
+                    </div>
+                    <div class="modal-footer">
+                      <!-- how could I get update or delete action, input type maybe? not button-->
+                      <button class="btn btn-warning " name="update" type="submit">Update</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!--MODAL 1 -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+              <table id="example1" class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>Aditional</th>
+                    <th align="right">Actions</th>
+
+
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for catalog in catalogs %}
+                  <tr>
+                    <td>{{catalog.code}}</td>
+                    <td>{{catalog.description}}</td>
+                    <td>{{catalog.related}}</td>
+                    <td align="right"> <button class="btn btn-warning " name="update" id="update"
+                        value="{{catalog.catalog_name}},{{catalog.code}},{{catalog.description}}"
+                        onclick="UpdateRec(this.value)">Update</button>
+                      <button class="btn btn-danger " name="delete" id="delete"
+                        value="{{catalog.catalog_name}},{{catalog.code}},{{catalog.description}}"
+                        onclick="DelRec(this.value)">Delete</button>
+                    </td>
+
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- page script -->
+  <script>
+    var table
+    $(function () {
+      $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+    var data;
+    table = $('#example1').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false
+    });
+
+ /* $('#example1 tbody').on( 'click', 'tr', function () {
+  
+  //$('#myModal1').modal('show');
+   //data = table.row( this ).data();
+   //console.log(data);
+   //document.getElementById("catalog_name1").value = data[0];
+   //$('#catalog_name1').val('data[0]').change();
+   $('#catalog_name1 option').each(function(){
+    var $this = $(this); // cache the this jQuery object to avoid overhead
+
+    if ($this.val() == data[0]) { // if this option's value is equal to our value
+        $this.prop('selected', true); // select this option
+        return false; // break the loop, no need to look further
+    }
+});
+   document.getElementById("code1").value = data[1];
+   document.getElementById("description1").value = data[2];
+  
+  });*/
+  
+  });
+    $("#insert").click(function () {
+      $('#myModal').modal('show');
+
+
+    });
+
+    $("#search").click(function () {
+      table.search(document.getElementById("key").value
+      ).draw();
+
+
+
+    });
+
+
+    function UpdateRec(IDS) {
+      $('#myModal1').modal('show');
+
+      data = IDS.toString().split(',');
+      document.getElementById("code1").value = data[1];
+      document.getElementById("description1").value = data[2];
+    }
+
+    function DelRec(IDS) {
+      var data;
+
+      var retVal = confirm("Do you want to continue and DELETE the record ?");
+      if (retVal == true) {
+        data = IDS.toString().split(',');
+
+        $.post($SCRIPT_ROOT + '/catalogs',
+          {
+            delete: "delete",
+            catalog_name: data[0],
+            code: data[1],
+            search: data[0]
+
+
+          },
+          function (data, status) {
+
+            table
+            window.location.replace("{{url_for('catalogs')}}?search={{request.args.get('search')}}");
+
+          });
+
+        return true;
+      }
+
+    }
+  </script>
+  {% endblock %}
