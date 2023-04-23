@@ -1,0 +1,18 @@
+name : Pull Request
+on: pull_request
+jobs:
+  first-job :
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          connection_url: ${{secrets.MAIL_CONNECTION}}
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          subject: Github Actions job result
+          to: ankita.harad@omnipayments.com
+          from: Ankita
+      - name: Print goodbye
+        run: echo "Hello World"
